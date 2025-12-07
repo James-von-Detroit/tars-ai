@@ -130,7 +130,7 @@ Cloud API (OpenAI, etc.)
 |-------|------|-----------|---------------|---------|
 | TinyLlama | 1.1B Q4 | ~1GB | 5-10 sec | Poor |
 | Phi-2 | 2.7B Q4 | ~2GB | 10-15 sec | Acceptable |
-| Llama 3-8B Q4 | 8B Q4 | ~5GB | 20-40 sec | Good (but slow) |
+| Llama 3-8B Q4 | ~4.5GB | ~5GB | 20-40 sec | Good (but slow) |
 
 **Reality:**
 - 8B model on Pi 5: **20-40 seconds per response** (too slow)
@@ -280,6 +280,8 @@ brew install ollama
 
 # Download Llama 3-8B Q4 (recommended for M1)
 ollama pull llama3:8b-instruct-q4_0
+# Note: Verify exact model name with 'ollama list' after pulling
+# Common variants: llama3:8b, llama3:8b-instruct, llama3:8b-q4_0
 
 # Alternative models:
 # ollama pull llama3:8b  # Full precision (slower, better quality)
@@ -303,9 +305,11 @@ nano config.ini
 
 ```ini
 [LLM]
-llm_backend = ooba  # This works with Ollama
+llm_backend = ooba  # Use 'ooba' for Ollama (OpenAI-compatible API)
+# Note: Despite the name, this works with Ollama's OpenAI-compatible endpoint
 base_url = http://localhost:11434/v1
 openai_model = llama3:8b-instruct-q4_0  # Match what you pulled
+# Verify model name with: ollama list
 contextsize = 4000
 max_tokens = 1000
 temperature = 0.8
@@ -472,6 +476,8 @@ whisper_model = base  # or small, medium
 ---
 
 ## Alpha Test Success Criteria
+
+These are the test criteria to verify during your alpha test:
 
 ### Must Have ✅
 - [ ] TARS responds to messages
