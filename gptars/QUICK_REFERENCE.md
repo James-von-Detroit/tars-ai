@@ -2,6 +2,8 @@
 
 One-page reference for common operations.
 
+> **🔒 Security:** Dependencies updated Dec 2024. See [SECURITY.md](SECURITY.md)
+
 ---
 
 ## 🚀 Installation (One Command)
@@ -11,6 +13,8 @@ git clone [repo] && cd gptars && ./macos/install_macos.sh
 ```
 
 **Time:** 15-20 minutes | **Size:** ~15GB | **Requirements:** macOS 13+, M1+
+
+> **Update existing installation:** `pip install --upgrade onnx==1.17.0 torch==2.6.0 transformers==4.48.0`
 
 ---
 

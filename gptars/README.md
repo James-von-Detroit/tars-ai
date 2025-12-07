@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/badge/python-3.11+-blue" alt="Python" />
   <img src="https://img.shields.io/badge/offline-100%25-green" alt="Offline" />
   <img src="https://img.shields.io/badge/latency-%3C800ms-yellow" alt="Latency" />
+  <img src="https://img.shields.io/badge/security-patched-green" alt="Security" />
 </p>
 
 <p align="center">
@@ -13,6 +14,8 @@
   100% offline-capable on Apple Silicon (M1/M2/M3/M4)<br>
   Using only open-source tools and models
 </p>
+
+> **🔒 Security Update (Dec 2024):** Critical vulnerabilities patched in dependencies (onnx, torch, transformers). See [SECURITY.md](SECURITY.md) for details.
 
 ---
 
