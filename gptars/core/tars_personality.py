@@ -1,3 +1,9 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024–2025 James-von-Detroit
+#
+# Part of GPTars v3.0 — 100% offline TARS voice assistant for macOS.
+# https://github.com/James-von-Detroit/tars-ai
+
 """
 core/tars_personality.py
 

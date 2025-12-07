@@ -17,11 +17,21 @@ BOLD='\033[1m'
 DIM='\033[2m'
 NC='\033[0m'
 
-# Find repo root
+# Auto-cd to repo root no matter where script is called from
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# If this script is at repo root, SCRIPT_DIR is repo root
+# Check for gptars/ directory to confirm
+if [[ ! -d "$SCRIPT_DIR/gptars" ]]; then
+    echo -e "${RED}Error:${NC} Cannot find gptars/ directory"
+    echo "This script must be run from the tars-ai repository root"
+    exit 1
+fi
 REPO_ROOT="$SCRIPT_DIR"
 VENV_DIR="$REPO_ROOT/venv"
 GPTARS_DIR="$REPO_ROOT/gptars"
+
+# Change to repo root
+cd "$REPO_ROOT"
 
 # Banner
 echo -e "${CYAN}"
@@ -33,7 +43,7 @@ cat << "BANNER"
  | |__| | |     | |/ ____ \ |_) |__) |
   \_____|_|     |_/_/    \_\___/____/
                                      
-         v3.1.0 – TARS Voice Assistant
+         v3.0.2 – TARS Voice Assistant
 BANNER
 echo -e "${NC}"
 
@@ -59,59 +69,59 @@ fi
 echo ""
 echo -e "${BOLD}Select mode:${NC}"
 echo ""
-echo "  1) Voice Assistant     - Full voice pipeline (STT → LLM → TTS)"
-echo "  2) Vision Mode         - Camera + LLaVA image analysis"
-echo "  3) Chat Only           - Text-only conversation"
-echo "  4) Wake Word Test      - Test \"Hey TARS\" detection"
-echo "  5) TTS Test            - Test text-to-speech"
+echo "  1) Push-to-talk        - Hold Enter to speak, release to process"
+echo "  2) Wake Word           - Say \"Hey TARS\" to activate"
+echo "  3) Vision Mode         - Camera + LLaVA image analysis"
+echo "  4) Vision Test         - Test camera and vision pipeline"
+echo "  5) Run Tests           - Execute test suite"
 echo "  6) Exit"
 echo ""
 read -p "Enter choice [1-6, default=1]: " choice
 choice="${choice:-1}"
 
-cd "$GPTARS_DIR"
-export PYTHONPATH="$GPTARS_DIR:$PYTHONPATH"
+# Set PYTHONPATH to repo root so 'from gptars.core import ...' works
+export PYTHONPATH="$REPO_ROOT:$PYTHONPATH"
 
 case $choice in
     1)
-        echo -e "\n${GREEN}Starting Voice Assistant...${NC}"
-        echo -e "${DIM}Say \"Hey TARS\" to wake, then speak your question.${NC}\n"
-        python3 -m core.voice_engine
+        echo -e "\n${GREEN}Starting Push-to-Talk Voice Assistant...${NC}"
+        echo -e "${DIM}Press and hold Enter to speak, release when done.${NC}\n"
+        python3 -m gptars.core.voice_engine
         ;;
     2)
-        echo -e "\n${GREEN}Starting Vision Mode...${NC}"
-        python3 -m core.vision_engine
+        echo -e "\n${GREEN}Starting Wake Word Voice Assistant...${NC}"
+        echo -e "${DIM}Say \"Hey TARS\" to wake, then speak your question.${NC}\n"
+        python3 -m gptars.core.wake_word
         ;;
     3)
-        echo -e "\n${GREEN}Starting Chat Mode...${NC}"
-        python3 -c "
-from core.tars_personality import TARSPersonality, DEFAULT_TARS
-tars = DEFAULT_TARS
-print('TARS Chat Mode. Type \"quit\" to exit.\n')
-while True:
-    try:
-        user = input('You: ')
-        if user.lower() in ['quit', 'exit', 'q']:
-            print('\nTARS: Goodbye.')
-            break
-        response = tars.generate_response(user)
-        print(f'TARS: {response}\n')
-    except (KeyboardInterrupt, EOFError):
-        print('\nTARS: Goodbye.')
-        break
-"
+        echo -e "\n${GREEN}Starting Vision Mode...${NC}"
+        python3 -m gptars.core.vision_engine
         ;;
     4)
-        echo -e "\n${GREEN}Testing Wake Word Detection...${NC}"
-        python3 -m core.wake_word
+        echo -e "\n${GREEN}Testing Vision Pipeline...${NC}"
+        python3 -c "
+from gptars.core.vision_engine import VisionEngine
+import sys
+
+print('Testing camera access...')
+try:
+    engine = VisionEngine()
+    print('✓ Vision engine initialized')
+    frame = engine.capture_frame()
+    if frame is not None:
+        print('✓ Camera capture successful')
+    else:
+        print('✗ Camera capture failed')
+    sys.exit(0)
+except Exception as e:
+    print(f'✗ Vision test failed: {e}')
+    sys.exit(1)
+"
         ;;
     5)
-        echo -e "\n${GREEN}Testing Text-to-Speech...${NC}"
-        echo "What a piece of work is a man." | "$REPO_ROOT/voices/piper/piper" \
-            --model "$REPO_ROOT/voices/en_US-lessac-medium.onnx" \
-            --output_file /tmp/tars_test.wav && \
-        afplay /tmp/tars_test.wav && \
-        echo -e "${GREEN}✓ TTS working!${NC}"
+        echo -e "\n${GREEN}Running Test Suite...${NC}"
+        cd "$REPO_ROOT"
+        python3 -m pytest gptars/tests/ -v
         ;;
     6|*)
         echo -e "\n${DIM}Goodbye.${NC}"

@@ -1,7 +1,7 @@
-# GPTars v3.1.0 — macOS ARM TARS Voice Assistant 🤖
+# GPTars v3.0.2 — macOS ARM TARS Voice Assistant 🤖
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.1.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-3.0.2-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/platform-macOS%20ARM-brightgreen?style=for-the-badge&logo=apple" alt="Platform" />
   <img src="https://img.shields.io/badge/python-3.11+-blue?style=for-the-badge&logo=python" alt="Python" />
   <img src="https://img.shields.io/badge/offline-100%25-green?style=for-the-badge" alt="Offline" />
@@ -16,6 +16,7 @@
 </p>
 
 <p align="center">
+  <a href="#-how-to-run">How to Run</a> •
   <a href="#-why-this-fork">Why This Fork</a> •
   <a href="#-quick-start-5-minutes">Quick Start</a> •
   <a href="#-features">Features</a> •
@@ -25,6 +26,78 @@
   <a href="#-troubleshooting">Troubleshooting</a> •
   <a href="https://discord.gg/AmE2Gv9EUt">Discord</a>
 </p>
+
+---
+
+## 🚀 How to Run
+
+> **TL;DR**: Install once, then run `./run_tars.sh` from repo root
+
+### First Time Setup (5 minutes)
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/James-von-Detroit/tars-ai.git
+cd tars-ai
+
+# 2. Run the installer (creates venv at root, downloads models)
+./gptars/macos/install_macos.sh
+
+# 3. The installer will:
+#    ✅ Install Homebrew + Python 3.11 + dependencies
+#    ✅ Install Ollama and download Llama-3-8B model (~4.7GB)
+#    ✅ Create virtual environment at tars-ai/venv/
+#    ✅ Install Python packages (Faster-Whisper, Piper TTS, OpenWakeWord)
+#    ✅ Request microphone/camera permissions
+#    ✅ Run smoke test to verify imports work
+```
+
+### Running TARS (every time after install)
+
+```bash
+# Navigate to repo root
+cd tars-ai
+
+# Activate virtual environment
+source venv/bin/activate
+
+# Launch interactive menu
+./run_tars.sh
+```
+
+**Menu Options:**
+1. **Push-to-talk** — Hold Enter to speak, release to process
+2. **Wake Word** — Say "Hey TARS" to activate (hands-free)
+3. **Vision Mode** — Camera + LLaVA image analysis
+4. **Vision Test** — Test camera and vision pipeline
+5. **Run Tests** — Execute test suite
+6. **Exit**
+
+### Direct Python Execution (alternative)
+
+```bash
+# From repo root, with venv activated:
+cd tars-ai
+source venv/bin/activate
+
+# Voice pipeline
+python3 -m gptars.core.voice_engine
+
+# Wake word detection
+python3 -m gptars.core.wake_word
+
+# Vision mode
+python3 -m gptars.core.vision_engine
+
+# Run tests
+python3 -m pytest gptars/tests/ -v
+```
+
+**Key Points:**
+- ✅ Virtual environment **must** be at repo root (`tars-ai/venv/`)
+- ✅ Always run from repo root (not inside `gptars/`)
+- ✅ Use `python3 -m gptars.core.module_name` for imports to work
+- ✅ PYTHONPATH is set automatically by `run_tars.sh`
 
 ---
 
@@ -92,9 +165,28 @@ tars-ai/
 │
 ├── 📄 README.md                    # ← You are here
 ├── 📄 LICENSE.md                   #    Dual license explanation
+├── 📄 DEPRECATION.md               #    Deprecated upstream files list
 ├── 📄 FORK-STRATEGY.md             #    Fork architecture documentation
 └── 📄 REVISION.md                  #    Changelog
 ```
+
+### 🔄 Deprecated Files from Upstream v2
+
+GPTars v3.0 is a complete rewrite for macOS ARM with offline capabilities. The original Raspberry Pi code is preserved in `upstream/` but not used. Key changes:
+
+**Core rewrites:**
+- `upstream/src/app.py` → `gptars/core/voice_engine.py` — New: Faster-Whisper STT, Piper TTS, 100% offline
+- `upstream/src/modules/module_llm.py` → `gptars/core/tars_personality.py` — New: Local Llama-3 via Ollama
+- `upstream/Install.sh` → `gptars/macos/install_macos.sh` — New: macOS ARM installer with logging
+
+**Removed (RPi-specific):**
+- Hardware modules (GPIO, servos, battery monitoring)
+- Systemd autostart scripts
+- Cloud-dependent configuration files
+
+**Why preserved:** License compliance (CC-BY-NC 4.0), future upstream sync capability, transparency.
+
+📋 **[See complete list in DEPRECATION.md →](DEPRECATION.md)**
 
 ---
 
