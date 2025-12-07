@@ -198,6 +198,9 @@ models/
 voices/
 !gptars/voices/.gitkeep
 
+# Testing output files
+testing/output/
+
 # =============================================================================
 # Build and Distribution
 # =============================================================================

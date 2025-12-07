@@ -1,7 +1,7 @@
-# GPTars v3.3.0 — macOS ARM TARS Voice Assistant 🤖
+# GPTars v3.3.5 — macOS ARM TARS Voice Assistant 🤖
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.3.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-3.3.5-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/platform-macOS%20ARM-brightgreen?style=for-the-badge&logo=apple" alt="Platform" />
   <img src="https://img.shields.io/badge/python-3.11+-blue?style=for-the-badge&logo=python" alt="Python" />
   <img src="https://img.shields.io/badge/offline-100%25-green?style=for-the-badge" alt="Offline" />
@@ -530,6 +530,60 @@ listener.start()
 # Say "Hey TARS" - should activate
 ```
 
+### Phase 7: Voice Quality Diagnostic Suite
+
+**NEW in v3.3.5**: Comprehensive voice quality testing and optimization tools.
+
+The `/testing` directory contains four diagnostic test scripts to identify and fix voice quality issues:
+
+#### Test 01: Latency Reduction
+```bash
+python3 testing/test_01_voice_adjustment.py
+```
+- **Purpose**: Reduce TTS synthesis latency using parallel chunked synthesis
+- **Target**: <1s synthesis time (vs ~1.5s baseline)
+- **Output**: Comparison audio files + latency metrics
+
+#### Test 02: Prosody Correction
+```bash
+python3 testing/test_02_voice_adjustment.py
+```
+- **Purpose**: Improve naturalness with prosody tuning (stability/clarity/exaggeration)
+- **Target**: >4/5 naturalness score
+- **Output**: A/B test audio with user scoring
+
+#### Test 03: VAD/Interruption Handling
+```bash
+python3 testing/test_03_voice_adjustment.py
+```
+- **Purpose**: Optimize Voice Activity Detection for proper pause detection
+- **Modes**: Simple energy-based, WebRTC VAD, integrated with voice_engine
+- **Target**: 0 interruptions during conversation
+- **Output**: Timestamped event log
+
+#### Test 04: Distortion/Noise Reduction
+```bash
+python3 testing/test_04_voice_adjustment.py
+```
+- **Purpose**: Apply audio post-processing (filters, normalization, compression)
+- **Target**: SNR >20dB, clipping <5%
+- **Output**: Before/after audio + spectrogram visualization
+
+#### Run All Tests
+```bash
+# Interactive test runner with progress tracking
+python3 testing/run_all_tests.py
+
+# Or run specific tests
+python3 testing/run_all_tests.py --tests 1,3,4
+```
+
+**Dependencies**: Tests gracefully degrade if optional packages unavailable
+- **Core**: piper-tts, sounddevice, soundfile, numpy
+- **Optional**: elevenlabs, pydub+ffmpeg, webrtcvad+pyaudio, matplotlib+scipy
+
+📖 **Full documentation**: See `/testing/README.md` for detailed usage, integration examples, and troubleshooting
+
 ---
 
 ## 🛠️ Model Alternatives
@@ -744,5 +798,5 @@ This is a **fan-made, educational project** inspired by TARS from *Interstellar*
 </p>
 
 <p align="center">
-  <sub>GPTars v3.3.0 | December 2025 | macOS ARM</sub>
+  <sub>GPTars v3.3.5 | December 2025 | macOS ARM</sub>
 </p>
