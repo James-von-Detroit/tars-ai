@@ -9,11 +9,18 @@
 **YES!** TARS integrates with:
 - OpenAI (GPT-4, GPT-4o-mini, GPT-3.5-turbo)
 - DeepInfra (various open-source models)
+- **Ollama (local LLMs - optimized for Apple Silicon M1/M2/M3)**
 - Ooba (Text Generation WebUI - local LLMs)
 - Tabby (TabbyAPI - local LLMs)
 
 ### Can you run it on a MacBook without robotics?
 **YES!** The AI brain is completely independent of the physical robot hardware.
+
+### Can it use local on-device LLM?
+**YES!** Works great with Ollama on ARM MacBooks. Zero cost, 100% private, offline capable.
+
+### Can it run on ARM-based MacBook Pro (M1/M2/M3)?
+**YES!** Fully compatible with Apple Silicon. See [ARM-MAC-LOCAL-LLM-GUIDE.md](Documentation/ARM-MAC-LOCAL-LLM-GUIDE.md) for optimized setup.
 
 ---
 

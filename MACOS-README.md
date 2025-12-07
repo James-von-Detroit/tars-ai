@@ -4,7 +4,8 @@
 
 TARS-AI uses **actual Large Language Models (LLMs)** like GPT-4 for intelligence. This isn't a simple chatbot - it has:
 
-- ✅ **Real LLM Brain**: GPT-4, GPT-3.5, or local models
+- ✅ **Real LLM Brain**: GPT-4, GPT-3.5, or **local models (Ollama)**
+- ✅ **ARM Mac Support**: Fully optimized for M1/M2/M3 MacBooks
 - ✅ **Persistent Memory**: Remembers conversations across sessions
 - ✅ **Character Personality**: Stays in character with customizable traits
 - ✅ **Context Awareness**: Understands conversation flow and history
@@ -12,6 +13,8 @@ TARS-AI uses **actual Large Language Models (LLMs)** like GPT-4 for intelligence
 - ✅ **Multi-modal**: Can see, speak, and reason
 
 **You can run the AI on your MacBook without any robotics hardware!**
+
+> **🍎 ARM MacBook Pro Users:** TARS works great on Apple Silicon! See [ARM-MAC-LOCAL-LLM-GUIDE.md](Documentation/ARM-MAC-LOCAL-LLM-GUIDE.md) for optimized setup with local LLMs.
 
 ---
 
@@ -80,33 +83,106 @@ Edit `/src/character/TARS/persona.ini` to customize!
 
 ---
 
-## Configuration Options
+## Local LLM Setup (Free & Private) 🆓
 
-### Use GPT-4 (Better Quality)
-In `config.ini`:
-```ini
-[LLM]
-openai_model = gpt-4o  # More expensive but smarter
-```
+### Use Ollama for On-Device AI
 
-### Use Local LLM (Free, Private)
+Perfect for ARM MacBooks (M1/M2/M3)! Run AI completely offline and free.
+
 ```bash
 # Install Ollama
 brew install ollama
 
 # Download a model
-ollama pull llama2
+ollama pull llama2          # 7B model (good for M1/M2)
+# OR
+ollama pull mistral         # 7B model (high quality)
+# OR for M2/M3 Pro/Max
+ollama pull llama2:13b      # 13B model (better quality)
 
-# Start server
+# Start server (in separate terminal)
 ollama serve
 ```
+
+### Configure TARS for Local LLM
 
 In `config.ini`:
 ```ini
 [LLM]
 llm_backend = ooba
 base_url = http://localhost:11434/v1
-openai_model = llama2
+openai_model = llama2  # or mistral, phi, etc.
+```
+
+In `.env`:
+```bash
+OPENAI_API_KEY=not-needed-for-local
+```
+
+**Benefits:**
+- ✅ **Zero cost** - No API fees
+- ✅ **100% private** - Data stays on your Mac
+- ✅ **Offline capable** - No internet needed after model download
+- ✅ **Optimized for Apple Silicon** - Uses Metal GPU acceleration
+
+**See [ARM-MAC-LOCAL-LLM-GUIDE.md](Documentation/ARM-MAC-LOCAL-LLM-GUIDE.md) for complete setup & testing plan**
+
+---
+
+## Local LLM Setup (Free & Private) 🆓
+
+### Use Ollama for On-Device AI
+
+Perfect for ARM MacBooks (M1/M2/M3)! Run AI completely offline and free.
+
+```bash
+# Install Ollama
+brew install ollama
+
+# Download a model
+ollama pull llama2          # 7B model (good for M1/M2)
+# OR
+ollama pull mistral         # 7B model (high quality)
+# OR for M2/M3 Pro/Max
+ollama pull llama2:13b      # 13B model (better quality)
+
+# Start server (in separate terminal)
+ollama serve
+```
+
+### Configure TARS for Local LLM
+
+In `config.ini`:
+```ini
+[LLM]
+llm_backend = ooba
+base_url = http://localhost:11434/v1
+openai_model = llama2  # or mistral, phi, etc.
+```
+
+In `.env`:
+```bash
+OPENAI_API_KEY=not-needed-for-local
+```
+
+**Benefits:**
+- ✅ **Zero cost** - No API fees
+- ✅ **100% private** - Data stays on your Mac
+- ✅ **Offline capable** - No internet needed after model download
+- ✅ **Optimized for Apple Silicon** - Uses Metal GPU acceleration
+
+**See [ARM-MAC-LOCAL-LLM-GUIDE.md](Documentation/ARM-MAC-LOCAL-LLM-GUIDE.md) for complete setup & testing plan**
+
+---
+
+## Alternative Configurations
+
+### Use GPT-4 (Better Quality)
+In `config.ini`:
+```ini
+[LLM]
+llm_backend = openai
+openai_model = gpt-4o  # More expensive but smarter
 ```
 
 ### Enable Voice
@@ -124,9 +200,15 @@ openai_voice = alloy  # Choose: alloy, echo, fable, onyx, nova, shimmer
 
 ## Documentation
 
-Three comprehensive guides are available in `/Documentation/`:
+Four comprehensive guides are available in `/Documentation/`:
 
-1. **AI-INTELLIGENCE-ANALYSIS.md**
+1. **ARM-MAC-LOCAL-LLM-GUIDE.md** ⭐ NEW!
+   - Complete setup for ARM MacBooks (M1/M2/M3)
+   - Local LLM with Ollama
+   - Performance benchmarks
+   - QA testing plan
+
+2. **AI-INTELLIGENCE-ANALYSIS.md**
    - Detailed analysis of AI capabilities
    - Architecture and technical details
    - Comparison to other AI systems
