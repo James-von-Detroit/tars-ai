@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/offline-100%25-green" alt="Offline" />
   <img src="https://img.shields.io/badge/latency-%3C800ms-yellow" alt="Latency" />
   <img src="https://img.shields.io/badge/security-patched-green" alt="Security" />
+  <img src="https://img.shields.io/badge/license-MIT%20%2B%20CC--BY--NC--4.0-blue" alt="License" />
 </p>
 
 <p align="center">
@@ -16,6 +17,24 @@
 </p>
 
 > **🔒 Security Update (Dec 2024):** Critical vulnerabilities patched in dependencies (onnx, torch, transformers). See [SECURITY.md](SECURITY.md) for details.
+
+---
+
+## 📜 License & Attribution
+
+**Dual License:** New code is MIT-licensed; portions derived from upstream TARS-AI are CC-BY-NC 4.0.
+
+```
+Portions of this software are derived from TARS-AI © TARS-AI Community 
+(via fork by James-von-Detroit), licensed under CC-BY-NC 4.0.
+```
+
+**Fork hierarchy:** [TARS-AI Community](https://github.com/TARS-AI-Community/TARS-AI) → [James-von-Detroit/tars-ai](https://github.com/James-von-Detroit/tars-ai) → **gptars v3.0**
+
+**Key points:**
+- ✅ New macOS code, voice pipeline, docs: **MIT License** (commercial use OK)
+- ⚠️ TARS personality/character elements: **CC-BY-NC 4.0** (non-commercial, attribution required)
+- 📖 Full details: [LICENSE.md](LICENSE.md) | [ATTRIBUTION.md](ATTRIBUTION.md) | [CREDITS.md](CREDITS.md)
 
 ---
 
@@ -335,47 +354,80 @@ Comprehensive guides available in `/docs/`:
 
 ## 📜 License & Attribution
 
+### Dual License Structure
+
+**gptars v3.0** uses dual licensing to properly attribute upstream works:
+
+- **New code (macOS installer, voice/vision engines, docs):** MIT License ✅
+- **Derived portions (TARS personality concepts):** CC-BY-NC 4.0 ⚠️
+
+**Attribution Statement:**
+```
+Portions of this software are derived from TARS-AI © TARS-AI Community 
+(via fork by James-von-Detroit), licensed under CC-BY-NC 4.0.
+```
+
+**Complete documentation:** See [LICENSE.md](LICENSE.md), [ATTRIBUTION.md](ATTRIBUTION.md), [CREDITS.md](CREDITS.md)
+
+---
+
 ### Original TARS Character
+
 TARS is a character from *Interstellar* (2014)
 - **Directed by:** Christopher Nolan
 - **Written by:** Jonathan Nolan and Christopher Nolan
-- **Studio:** Paramount Pictures, Warner Bros., Legendary Pictures
+- **TARS Performed by:** Bill Irwin
+- **Studios:** Paramount Pictures, Warner Bros., Legendary Pictures
 
-This project is a fan-made tribute and educational implementation. We do not claim any rights to the TARS character or Interstellar intellectual property.
+This project is a fan-made tribute and educational implementation. We claim no rights to the TARS character or *Interstellar* intellectual property.
 
-### This Project
-- **License:** MIT License (for code only)
-- **For:** Personal and educational use
-- **Not for:** Commercial use without proper licensing
+---
 
-### Credits & Acknowledgments
+### Fork Hierarchy
 
-This project builds upon and is inspired by:
+```
+TARS-AI Community (CC-BY-NC 4.0)
+  ↓
+James-von-Detroit/tars-ai (CC-BY-NC 4.0)
+  ↓
+gptars v3.0 (MIT + CC-BY-NC 4.0 dual license)
+```
 
-1. **TARS-AI Community Project**
-   - Original repository: [TARS-AI-Community/TARS-AI](https://github.com/TARS-AI-Community/TARS-AI)
-   - For: Hardware design, robot chassis, servo control
-   - We are grateful to the TARS-AI community for the incredible physical robot implementation
+**Upstream Projects:**
 
-2. **Open Source Projects Used**
-   - **Ollama** - Local LLM serving ([ollama.ai](https://ollama.ai))
-   - **Meta Llama 3** - Base language model ([ai.meta.com/llama](https://ai.meta.com/llama/))
-   - **Faster-Whisper** - Speech recognition ([github.com/SYSTRAN/faster-whisper](https://github.com/SYSTRAN/faster-whisper))
-   - **Piper TTS** - Text-to-speech ([github.com/rhasspy/piper](https://github.com/rhasspy/piper))
-   - **OpenWakeWord** - Wake word detection ([github.com/dscripka/openWakeWord](https://github.com/dscripka/openWakeWord))
-   - **LLaVA** - Vision language model ([llava-vl.github.io](https://llava-vl.github.io))
-   - **OpenCV** - Computer vision ([opencv.org](https://opencv.org))
+1. **TARS-AI Community Project** - Original TARS robot recreation
+   - Repository: [TARS-AI-Community/TARS-AI](https://github.com/TARS-AI-Community/TARS-AI)
+   - License: CC-BY-NC 4.0
+   - Attribution: [Guidelines](https://github.com/TARS-AI-Community/TARS-AI/blob/V2/ATTRIBUTION.md)
 
-3. **Inspiration**
-   - Christopher and Jonathan Nolan for creating TARS
-   - The Interstellar film production team
-   - The open-source AI community
+2. **James-von-Detroit/tars-ai Fork** - Foundation for v3.0
+   - Repository: [James-von-Detroit/tars-ai](https://github.com/James-von-Detroit/tars-ai)
+   - License: CC-BY-NC 4.0 (inherited)
+
+---
+
+### Open Source Dependencies
+
+All dependencies retain their original licenses:
+
+- **Ollama** (MIT) - Local LLM serving ([ollama.ai](https://ollama.ai))
+- **Meta Llama 3** (Llama 3 Community License) - Language model ([ai.meta.com/llama](https://ai.meta.com/llama/))
+- **Faster-Whisper** (MIT) - Speech recognition ([github.com/SYSTRAN/faster-whisper](https://github.com/SYSTRAN/faster-whisper))
+- **Piper TTS** (MIT) - Text-to-speech ([github.com/rhasspy/piper](https://github.com/rhasspy/piper))
+- **OpenWakeWord** (Apache 2.0) - Wake word detection ([github.com/dscripka/openWakeWord](https://github.com/dscripka/openWakeWord))
+- **LLaVA** (Apache 2.0) - Vision model ([llava-vl.github.io](https://llava-vl.github.io))
+- **OpenCV** (Apache 2.0) - Computer vision ([opencv.org](https://opencv.org))
+- **PyTorch** (BSD), **Transformers** (Apache 2.0), **NumPy** (BSD), and many more
+
+See [ATTRIBUTION.md](ATTRIBUTION.md) for complete list.
+
+---
 
 ### Version History
 
 - **v3.0 Alpha** (December 2024) - Complete rewrite for Apple Silicon
   - Full offline operation
-  - Native ARM support
+  - Native ARM support with Metal GPU
   - Vision capabilities added
   - Enhanced personality system
   - Wake word detection
