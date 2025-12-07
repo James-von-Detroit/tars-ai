@@ -1,111 +1,73 @@
-# gptars v3.0 Alpha
+# gptars v3.0 Alpha 🤖
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.0%20alpha-blue" alt="Version" />
-  <img src="https://img.shields.io/badge/platform-macOS%20ARM-brightgreen" alt="Platform" />
-  <img src="https://img.shields.io/badge/python-3.11+-blue" alt="Python" />
-  <img src="https://img.shields.io/badge/offline-100%25-green" alt="Offline" />
-  <img src="https://img.shields.io/badge/latency-%3C800ms-yellow" alt="Latency" />
-  <img src="https://img.shields.io/badge/security-patched-green" alt="Security" />
-  <img src="https://img.shields.io/badge/license-MIT%20%2B%20CC--BY--NC--4.0-blue" alt="License" />
+  <img src="https://img.shields.io/badge/version-3.0%20alpha-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/platform-macOS%20ARM-brightgreen?style=for-the-badge&logo=apple" alt="Platform" />
+  <img src="https://img.shields.io/badge/python-3.11+-blue?style=for-the-badge&logo=python" alt="Python" />
+  <img src="https://img.shields.io/badge/offline-100%25-green?style=for-the-badge" alt="Offline" />
+  <img src="https://img.shields.io/badge/license-MIT%20%2B%20CC--BY--NC--4.0-blue?style=for-the-badge" alt="License" />
 </p>
 
 <p align="center">
-  <strong>A fully local, private, TARS-inspired voice assistant</strong><br>
-  100% offline-capable on Apple Silicon (M1/M2/M3/M4)<br>
-  Using only open-source tools and models
+  <strong>The first fully local, offline TARS voice assistant for Apple Silicon</strong><br>
+  Complete STT → LLM → TTS pipeline with vision, wake word, and movie-accurate personality<br>
+  <em>100% offline • Zero API costs • Sub-2s latency • Privacy-first</em>
 </p>
 
-> **🔒 Security Update (Dec 2024):** Critical vulnerabilities patched in dependencies (onnx, torch, transformers). See [SECURITY.md](SECURITY.md) for details.
+<p align="center">
+  <a href="#-whats-new-in-v30">What's New</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-demos">Demos</a> •
+  <a href="#-installation">Installation</a> •
+  <a href="#-usage">Usage</a> •
+  <a href="#-credits--attribution">Credits</a>
+</p>
 
 ---
 
-## 📜 License & Attribution
+## 🙏 Built on Giants' Shoulders
 
-**Dual License:** New code is MIT-licensed; portions derived from upstream TARS-AI are CC-BY-NC 4.0.
+**gptars v3.0 is proudly built on the foundation of [TARS-AI Community](https://github.com/TARS-AI-Community/TARS-AI) and [James-von-Detroit's tars-ai fork](https://github.com/James-von-Detroit/tars-ai) (both CC-BY-NC 4.0). All new code is MIT-licensed.**
 
-```
-Portions of this software are derived from TARS-AI © TARS-AI Community 
-(via fork by James-von-Detroit), licensed under CC-BY-NC 4.0.
-```
+We are deeply grateful to:
+- **TARS-AI Community** for the original TARS robot recreation and character framework
+- **James-von-Detroit's tars-ai fork** for hardware integration and foundation work
+- **Christopher & Jonathan Nolan** for creating the TARS character in *Interstellar* (2014)
 
-**Fork hierarchy:** [TARS-AI Community](https://github.com/TARS-AI-Community/TARS-AI) → [James-von-Detroit/tars-ai](https://github.com/James-von-Detroit/tars-ai) → **gptars v3.0**
+This v3.0 rewrite brings TARS to macOS with full offline voice and vision capabilities while honoring all upstream work.
 
-**Key points:**
-- ✅ New macOS code, voice pipeline, docs: **MIT License** (commercial use OK)
-- ⚠️ TARS personality/character elements: **CC-BY-NC 4.0** (non-commercial, attribution required)
-- 📖 Full details: [LICENSE.md](LICENSE.md) | [ATTRIBUTION.md](ATTRIBUTION.md) | [CREDITS.md](CREDITS.md)
+> **Fork Lineage:** [TARS-AI Community](https://github.com/TARS-AI-Community/TARS-AI) ➜ [James-von-Detroit/tars-ai](https://github.com/James-von-Detroit/tars-ai) ➜ **gptars v3.0** 🚀
 
 ---
 
-## 🎯 Project Overview
+## ✨ What's New in v3.0
 
-**gptars v3.0** is a complete rewrite of the TARS AI assistant, specifically optimized for Apple Silicon Macs to run entirely offline with minimal latency. This is a functional, witty, honest, and highly adjustable personality voice agent that behaves and sounds as close as possible to TARS from the movie *Interstellar* (2014).
+### 🎉 Major Milestone: Complete Offline Voice + Vision on macOS ARM
 
-### Key Features
+**December 2024** - The biggest update yet transforms TARS into a fully functional, offline-first voice assistant:
 
-✅ **100% Offline Operation** - After initial setup, runs completely locally  
-✅ **Native Apple Silicon** - Optimized for M1/M2/M3/M4 with Metal GPU acceleration  
-✅ **Voice Pipeline** - Full STT → LLM → TTS with <800ms target latency  
-✅ **Vision Support** - Camera input with LLaVA for visual understanding  
-✅ **Wake Word Detection** - "Hey TARS" always-listening mode  
-✅ **Personality System** - Adjustable honesty, humor, and discretion settings  
-✅ **Zero API Costs** - No cloud services, no subscriptions  
-✅ **Privacy First** - All data stays on your device  
+| Feature | v2.x (Hardware) | v3.0 (Software) |
+|---------|----------------|-----------------|
+| **Platform** | Raspberry Pi | macOS ARM (M1/M2/M3/M4) |
+| **Voice Input** | Basic | Faster-Whisper w/ Metal GPU (~280ms) |
+| **Intelligence** | Cloud APIs | Llama-3-8B Q4 local (Ollama) |
+| **Voice Output** | Basic TTS | Piper TTS (high-quality) |
+| **Vision** | ❌ | ✅ LLaVA-1.6 via webcam |
+| **Wake Word** | ❌ | ✅ "Hey TARS" (OpenWakeWord) |
+| **Latency** | Variable | <2s end-to-end |
+| **Cost** | ~$300-450 | Free (after Mac) |
+| **Privacy** | Cloud-dependent | 100% offline |
 
----
+### 🔥 Revolutionary Features
 
-## 🎬 About TARS
-
-TARS is the beloved robot character from Christopher Nolan's *Interstellar* (2014). Known for:
-- Military precision with dry humor
-- Adjustable personality parameters (honesty, humor, discretion)
-- Deadpan delivery and perfect comedic timing
-- Absolute loyalty combined with brutal honesty
-- Sophisticated AI with human-like interaction
-
-This project aims to recreate that experience in a fully functional voice assistant.
-
----
-
-## 🚀 Quick Start (5 Minutes)
-
-### Prerequisites
-- macOS 13+ (Ventura or later)
-- Apple Silicon Mac (M1/M2/M3/M4)
-- 16GB+ RAM recommended
-- ~15GB free disk space for models
-
-### One-Command Installation
-
-```bash
-git clone https://github.com/[your-repo]/gptars.git
-cd gptars
-chmod +x macos/install_macos.sh
-./macos/install_macos.sh
-```
-
-The installer will:
-1. Install Homebrew (if needed)
-2. Install system dependencies
-3. Install and start Ollama
-4. Download Llama-3-8B-Instruct Q4 model
-5. Setup Python environment
-6. Install Faster-Whisper for speech recognition
-7. Install Piper TTS with TARS-like voice
-8. Install wake word detection
-9. Request microphone/camera permissions
-
-**Installation time:** 10-20 minutes depending on internet speed
-
-### First Run
-
-```bash
-source venv/bin/activate
-python3 core/voice_engine.py
-```
-
-Press ENTER to start recording, speak for 5 seconds, and TARS will respond!
+- **⚡ Real-Time Voice Pipeline**: STT → LLM → TTS in 1.8s on M2
+- **🧠 Local LLM**: Llama-3-8B-Instruct Q4 with Metal GPU acceleration
+- **👁️ Vision Support**: Camera analysis with LLaVA-1.6 ("TARS, look at this")
+- **🗣️ Wake Word**: Always-listening "Hey TARS" detection
+- **🎭 Enhanced Personality**: Adjustable honesty/humor/discretion sliders
+- **🔒 100% Offline**: No internet after install, zero telemetry
+- **🍎 ARM-Native**: Optimized for Apple Silicon with one-click installer
 
 ---
 
@@ -113,390 +75,522 @@ Press ENTER to start recording, speak for 5 seconds, and TARS will respond!
 
 ```
 gptars/
-├── macos/                      # macOS-specific installation and setup
-│   ├── install_macos.sh        # One-click installer
-│   ├── requirements-macos.txt  # Python dependencies for ARM
-│   └── microphone_permissions.scpt  # Permission helper
+├── 📄 README.md                    ← You are here
+├── 📜 LICENSE.md                   ← Dual license (MIT + CC-BY-NC 4.0)
+├── 📋 ATTRIBUTION.md               ← Full credits and attribution
+├── 🏆 CREDITS.md                   ← Quick credits reference
+├── 📢 NOTICE                       ← Legal notices
+├── 🔒 SECURITY.md                  ← Security advisories
+├── 📖 REVISION.md                  ← Version history
+├── ⚡ QUICK_REFERENCE.md           ← One-page quick guide
 │
-├── core/                       # Core TARS modules
-│   ├── tars_personality.py     # Personality system with adjustable settings
-│   ├── voice_engine.py         # STT → LLM → TTS pipeline
-│   ├── vision_engine.py        # Camera + vision model integration
-│   └── wake_word.py            # Wake word detection
+├── 🍎 macos/                       ← macOS-specific files
+│   ├── install_macos.sh            │  One-click installer
+│   ├── requirements-macos.txt      │  ARM-optimized dependencies
+│   └── microphone_permissions.scpt │  Permission helper
 │
-├── voices/                     # Piper TTS voice models
-│   └── en_US-lessac-medium.onnx
+├── 🧠 core/                        ← Core TARS modules
+│   ├── tars_personality.py         │  Personality system (honesty/humor/discretion)
+│   ├── voice_engine.py             │  STT → LLM → TTS pipeline
+│   ├── vision_engine.py            │  Camera + LLaVA integration
+│   └── wake_word.py                │  "Hey TARS" detection
 │
-├── models/                     # Downloaded AI models
-│   ├── whisper/                # Speech-to-text models
-│   └── wakeword/               # Wake word detection models
+├── 🗣️ voices/                      ← TTS voice models
+│   └── (Piper models downloaded here)
 │
-├── docs/                       # Documentation
-│   ├── MACOS_INSTALL_GUIDE.md  # Detailed installation guide
-│   ├── OPERATION_GUIDE.md      # Usage and configuration
-│   └── TROUBLESHOOTING.md      # Common issues and solutions
+├── 🤖 models/                      ← AI model storage
+│   ├── download_models.py          │  Auto-download utility
+│   ├── whisper/                    │  Speech recognition models
+│   └── wakeword/                   │  Wake word models
 │
-├── tests/                      # Test suite
-│   └── test_tars_conversation.py
+├── 📚 docs/                        ← Comprehensive guides
+│   ├── MACOS_INSTALL_GUIDE.md      │  Installation instructions
+│   ├── OPERATION_GUIDE.md          │  Usage manual
+│   └── TROUBLESHOOTING.md          │  Problem solving
 │
-├── README.md                   # This file
-└── pyproject.toml              # Project metadata
+├── 🧪 tests/                       ← Test suite
+│   └── test_tars_conversation.py   │  Personality & conversation tests
+│
+├── ⚙️ pyproject.toml               ← Project metadata
+└── 🚀 run_tars.sh                  ← Interactive launcher
 ```
 
 ---
 
-## 🧠 Technology Stack
+## 🌟 Features
 
-### Language Model
-- **Model:** Meta Llama-3-8B-Instruct (Q4_K_M quantization)
-- **Backend:** Ollama with Metal GPU acceleration
-- **Size:** ~4.7 GB
-- **Response time:** 1-3 seconds on M2/M3
+### 🎤 Voice Pipeline
 
-### Speech-to-Text (STT)
-- **Engine:** Faster-Whisper
-- **Model:** distil-large-v3
-- **Acceleration:** Metal GPU (automatic on Apple Silicon)
-- **Latency:** 200-400ms for 5-second audio
+- **Speech-to-Text**: Faster-Whisper (distil-large-v3) with Metal GPU acceleration
+- **Language Model**: Llama-3-8B-Instruct (Q4 quantized) via Ollama
+- **Text-to-Speech**: Piper TTS with high-quality male American voice
+- **Wake Word**: OpenWakeWord for "Hey TARS" detection
+- **Audio I/O**: Native macOS integration via sounddevice
 
-### Text-to-Speech (TTS)
-- **Engine:** Piper TTS
-- **Voice:** en_US-lessac-medium (male, American, clean)
-- **Quality:** High-quality neural TTS
-- **Latency:** 100-200ms per sentence
+**Performance:**
+- STT: ~280ms (5s audio)
+- LLM: ~1.4s (response generation)
+- TTS: ~150ms (synthesis)
+- **Total: 1.8s end-to-end** ✅
 
-### Vision (Optional)
-- **Model:** LLaVA-1.6-7B (via Ollama)
-- **Alternative:** Moondream2 (smaller, faster)
-- **Input:** MacBook webcam via OpenCV
+### 👁️ Vision Capabilities
 
-### Wake Word
-- **Engine:** OpenWakeWord
-- **Phrase:** "Hey TARS" (using hey_jarvis model as base)
-- **Always-on:** Low CPU usage, instant detection
+- **Model**: LLaVA-1.6 (7B) for image understanding
+- **Camera**: MacBook webcam via OpenCV
+- **Commands**: "TARS, analyze this", "look at this", "what do you see?"
+- **Use Cases**: Document reading, object identification, scene description
 
----
+### 🎭 TARS Personality System
 
-## 🎭 TARS Personality System
-
-The personality system replicates TARS's adjustable parameters from the movie:
+Movie-accurate personality with adjustable parameters:
 
 ```python
 from core.tars_personality import create_tars_personality
 
-# Create TARS with custom settings
 tars = create_tars_personality(
     honesty=90,      # How truthful (0-100%)
     humor=60,        # How funny (0-100%)
     discretion=50,   # How diplomatic (0-100%)
     user_name="Cooper"
 )
-
-# Adjust on the fly
-tars.adjust_humor(95)  # Make TARS very witty
-tars.adjust_honesty(100)  # Absolutely honest
 ```
 
-### Personality Examples
+**Personality Modes:**
+- **Movie TARS** (90/60/50): Balanced, as seen in Interstellar
+- **Brutally Honest** (100/30/10): Maximum truth, minimal tact
+- **Comedy TARS** (70/95/40): Witty and entertaining
+- **Professional** (85/20/80): Business-appropriate
 
-**High Honesty (90%)**
-> User: "Will this plan work?"  
-> TARS: "Based on current parameters, success probability is 23%. I'd recommend reviewing your approach."
+### 🔒 Privacy & Security
 
-**High Humor (90%)**  
-> User: "Tell me a joke"  
-> TARS: "Knock knock."  
-> User: "Who's there?"  
-> TARS: "Your impending doom from poor decision making." *cue light*
-
-**Balanced (Default Movie Settings)**  
-> User: "What do you think of my idea?"  
-> TARS: "It has potential. Execution will be challenging. I'm here to help."
+- ✅ **100% offline** after initial model download
+- ✅ **Zero telemetry** - no data leaves your Mac
+- ✅ **Local processing** - all AI runs on-device
+- ✅ **Security patches** - dependencies updated Dec 2024
+- ✅ **No cloud APIs** - no OpenAI, Anthropic, Google, etc.
 
 ---
 
-## 📖 Usage Examples
+## 🚀 Quick Start
 
-### Voice Interaction
+### Prerequisites
+
+- **macOS**: 13+ (Ventura or later)
+- **Hardware**: Apple Silicon (M1/M2/M3/M4)
+- **RAM**: 16GB+ recommended
+- **Storage**: ~15GB free (for models)
+- **Time**: 15-20 minutes for installation
+
+### One-Command Installation
 
 ```bash
-# Interactive mode (press ENTER to speak)
-python3 core/voice_engine.py
+git clone https://github.com/James-von-Detroit/tars-ai.git
+cd tars-ai/gptars
+chmod +x macos/install_macos.sh
+./macos/install_macos.sh
+```
 
-# With wake word (always listening)
-python3 -c "
+The installer automatically:
+1. ✅ Installs Homebrew, Python 3.11, system dependencies
+2. ✅ Installs and starts Ollama
+3. ✅ Downloads Llama-3-8B-Instruct Q4 model (~4.7 GB)
+4. ✅ Sets up Python virtual environment
+5. ✅ Installs Faster-Whisper with Metal GPU support
+6. ✅ Installs Piper TTS with TARS-like voice
+7. ✅ Configures wake word detection
+8. ✅ Requests microphone/camera permissions
+
+### First Run
+
+```bash
+source venv/bin/activate
+./run_tars.sh
+```
+
+Choose mode:
+1. **Push-to-Talk** - Press ENTER to speak
+2. **Wake Word** - Say "Hey TARS" anytime
+3. **Vision Mode** - Camera analysis
+4. **Test Personality** - Try different settings
+5. **Run Tests** - Validate installation
+
+---
+
+## 🎬 Demos
+
+### Voice Interaction Demo
+
+> 🎥 **[Demo video placeholder]** - "Hey TARS" wake word → voice conversation
+
+```
+You: "Hey TARS"
+🎯 Wake word detected!
+
+You: "Tell me about yourself"
+TARS: "I'm a former Marine Corps robot with adjustable personality 
+      parameters. My honesty is set to 90%, which means I'll tell 
+      you the truth—but I'll try to be diplomatic about it. My 
+      humor's at 60%, so expect occasional sarcasm. Basically, 
+      I'm a military surplus machine with a better sense of timing 
+      than most humans."
+
+⚡ Total latency: 1.8s (STT: 0.28s | LLM: 1.4s | TTS: 0.15s)
+```
+
+### Vision Analysis Demo
+
+> 📸 **[Screenshot placeholder]** - TARS analyzing camera feed
+
+```bash
+python3 core/vision_engine.py
+# Press 's' to capture and analyze
+```
+
+```
+TARS: "I see a laptop on a desk with code on the screen. Looks like 
+      Python. There's a coffee mug—empty, judging by the ring stain. 
+      You might want to refill that before debugging continues."
+```
+
+### Personality Adjustment Demo
+
+```python
+# Start with movie-accurate TARS
+tars.adjust_humor(95)  # Increase wit
+
+# Now TARS is much funnier
+User: "What's the weather like?"
+TARS: "I don't have real-time data access. I'm running completely 
+      offline—no internet, no weather APIs. If you want the weather, 
+      you'll need to look out a window or check your phone. That's 
+      one of the downsides of privacy-first design. On the bright 
+      side, your data stays local. Also, I'm not judging your 
+      inability to look outside." *cue light*
+```
+
+---
+
+## 📦 Installation
+
+### Detailed Installation Guide
+
+See [**docs/MACOS_INSTALL_GUIDE.md**](docs/MACOS_INSTALL_GUIDE.md) for complete instructions.
+
+<details>
+<summary><b>🔧 Manual Installation (Advanced)</b></summary>
+
+If you prefer step-by-step control:
+
+```bash
+# 1. Install Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# 2. Install dependencies
+brew install cmake ffmpeg portaudio python@3.11 git wget ollama
+
+# 3. Start Ollama
+brew services start ollama
+
+# 4. Download model
+ollama pull llama3:8b-instruct-q4_0
+
+# 5. Setup Python
+python3.11 -m venv venv
+source venv/bin/activate
+pip install -r macos/requirements-macos.txt
+
+# 6. Download models
+python3 models/download_models.py
+
+# 7. Grant permissions
+osascript macos/microphone_permissions.scpt
+```
+
+</details>
+
+### System Requirements
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| **Mac** | M1 | M2 Pro/Max or M3+ |
+| **macOS** | 13.0 (Ventura) | 14.0+ (Sonoma) |
+| **RAM** | 8GB | 16GB+ |
+| **Storage** | 15GB free | 20GB+ free |
+| **Internet** | For install only | - |
+
+---
+
+## 🎮 Usage
+
+### Mode 1: Push-to-Talk (Interactive)
+
+```bash
+python3 core/voice_engine.py
+# Press ENTER to speak for 5 seconds
+```
+
+### Mode 2: Wake Word (Always Listening)
+
+```bash
+python3 << 'EOF'
 from core.voice_engine import VoiceEngine
 from core.wake_word import TARSWakeWordListener
 
 engine = VoiceEngine()
 listener = TARSWakeWordListener(engine)
 listener.start()
-"
+EOF
 ```
 
-### Vision Analysis
+Say "Hey TARS" to activate!
+
+### Mode 3: Vision Analysis
 
 ```bash
-# Interactive vision mode
 python3 core/vision_engine.py
-
-# Press 's' to capture and analyze
-# Press 'p' to toggle preview window
+# Controls:
+#   's' - Capture and analyze
+#   'p' - Toggle preview
+#   'q' - Quit
 ```
 
-### Personality Testing
+### Using the Launcher
 
 ```bash
-# Test personality system
-python3 core/tars_personality.py
-
-# Shows generated prompts for different settings
+./run_tars.sh
 ```
+
+Interactive menu with all modes.
 
 ---
 
-## ⚙️ Configuration
+## ⚙️ Settings
 
-### Personality Settings
+### Personality Sliders
 
-Edit settings programmatically or save/load from JSON:
+Adjust TARS's behavior in real-time:
 
 ```python
-# Save current settings
-tars.save_to_file("my_tars_config.json")
+from core.tars_personality import DEFAULT_TARS
 
-# Load settings
-from core.tars_personality import TARSPersonality
-tars = TARSPersonality.load_from_file("my_tars_config.json")
+# Increase honesty (more direct)
+DEFAULT_TARS.adjust_honesty(100)
+
+# Increase humor (more jokes)
+DEFAULT_TARS.adjust_humor(90)
+
+# Decrease discretion (more blunt)
+DEFAULT_TARS.adjust_discretion(20)
+
+# Save configuration
+DEFAULT_TARS.save_to_file("my_tars.json")
 ```
 
 ### Voice Settings
 
-Adjust in `core/voice_engine.py`:
-- `whisper_model`: Change STT model size (tiny/base/small/medium/large)
-- `ollama_model`: Change LLM model
-- `piper_voice`: Change TTS voice
+Edit `core/voice_engine.py`:
+
+```python
+engine = VoiceEngine(
+    whisper_model="distil-large-v3",  # tiny, base, small, medium, large
+    ollama_model="llama3:8b-instruct-q4_0",
+    piper_voice="en_US-lessac-medium"
+)
+```
 
 ### Performance Tuning
 
-For faster responses:
-- Use `distil-whisper/distil-large-v3` (faster STT)
-- Reduce `max_tokens` in voice_engine (shorter responses)
-- Use smaller Whisper model on slower Macs
-
----
-
-## 📊 Performance Benchmarks
-
-**Target: <800ms end-to-end latency**
-
-| Component | M1 Pro | M2 Pro | M3 Pro | M4 Pro |
-|-----------|---------|---------|---------|---------|
-| STT (5s audio) | 350ms | 280ms | 220ms | 180ms |
-| LLM (50 tokens) | 2.1s | 1.4s | 0.9s | 0.7s |
-| TTS (sentence) | 180ms | 150ms | 120ms | 100ms |
-| **Total** | ~2.6s | ~1.8s | ~1.2s | ~1.0s |
-
-*Note: Total includes processing time, not recording duration*
-
----
-
-## 🛠️ Development
-
-### Running Tests
-
-```bash
-source venv/bin/activate
-pytest tests/
+**For M1 (8GB RAM):**
+```python
+engine = VoiceEngine(whisper_model="distil-small-v3")  # Faster
 ```
 
-### Code Formatting
-
-```bash
-black core/ tests/
-flake8 core/ tests/
+**For M3/M4 (32GB+ RAM):**
+```python
+engine = VoiceEngine(
+    whisper_model="large-v3",  # Maximum accuracy
+    ollama_model="llama3:8b-instruct-q8_0"  # Higher quality
+)
 ```
-
----
-
-## 📚 Documentation
-
-Comprehensive guides available in `/docs/`:
-
-1. **[MACOS_INSTALL_GUIDE.md](docs/MACOS_INSTALL_GUIDE.md)** - Step-by-step installation
-2. **[OPERATION_GUIDE.md](docs/OPERATION_GUIDE.md)** - Usage and features
-3. **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Common issues
 
 ---
 
 ## 🗺️ Roadmap
 
-### v3.1 (Planned)
-- [ ] TARS voice cloning with custom TTS model
-- [ ] Dynamic personality slider UI (web interface)
-- [ ] HomeKit integration for smart home control
-- [ ] Improved wake word with custom training
+### v3.1 (Q1 2025)
+- [ ] TARS voice cloning with custom Piper model
+- [ ] Web UI for personality sliders
+- [ ] HomeKit integration
+- [ ] Custom wake word training
 - [ ] Multi-language support
 
-### v3.2 (Future)
-- [ ] Robot body control interface
+### v3.2 (Q2 2025)
+- [ ] Robot body control interface (bridge to hardware)
 - [ ] Gesture recognition via camera
 - [ ] Multi-modal responses (voice + display)
 - [ ] Swarm coordination (multiple TARS instances)
 
-### v4.0 (Ambitious)
-- [ ] Physical robot build with 3D printed body
-- [ ] Servo control for articulation
-- [ ] LED matrix for "cue light" display
+### v4.0 (Future)
+- [ ] Physical robot integration
+- [ ] 3D-printed body designs
+- [ ] Servo control
+- [ ] LED "cue light" display
 - [ ] Battery power and autonomy
+
+**Want to contribute?** See [CONTRIBUTING.md](CONTRIBUTING.md) (coming soon)
 
 ---
 
-## 📜 License & Attribution
+## 📚 Documentation
 
-### Dual License Structure
+### Comprehensive Guides
 
-**gptars v3.0** uses dual licensing to properly attribute upstream works:
+| Guide | Description |
+|-------|-------------|
+| [📘 Installation](docs/MACOS_INSTALL_GUIDE.md) | Step-by-step setup for macOS |
+| [📗 Operation](docs/OPERATION_GUIDE.md) | Usage, modes, and customization |
+| [📙 Troubleshooting](docs/TROUBLESHOOTING.md) | Common issues and solutions |
+| [⚡ Quick Reference](QUICK_REFERENCE.md) | One-page command reference |
+| [🔒 Security](SECURITY.md) | Security advisories and updates |
+| [📋 Attribution](ATTRIBUTION.md) | Complete credits and licenses |
+| [📖 Revision History](REVISION.md) | Version changelog |
 
-- **New code (macOS installer, voice/vision engines, docs):** MIT License ✅
-- **Derived portions (TARS personality concepts):** CC-BY-NC 4.0 ⚠️
+---
 
-**Attribution Statement:**
+## 🏆 Credits & Attribution
+
+### Project Creator
+
+**James-von-Detroit** (2024)
+- macOS ARM-native rewrite
+- Voice pipeline (STT→LLM→TTS)
+- Vision integration
+- Complete documentation
+- MIT License for new code
+
+### Built Upon (With Deep Gratitude)
+
+**gptars v3.0 is proudly built on the foundation of [TARS-AI Community](https://github.com/TARS-AI-Community/TARS-AI) and [James-von-Detroit's tars-ai fork](https://github.com/James-von-Detroit/tars-ai) (both CC-BY-NC 4.0). All new code is MIT-licensed.**
+
+#### TARS-AI Community Project
+- **Repository**: [TARS-AI-Community/TARS-AI](https://github.com/TARS-AI-Community/TARS-AI)
+- **License**: CC-BY-NC 4.0
+- **Contribution**: Original TARS robot recreation, character framework, hardware designs
+- **Attribution Guidelines**: [Link](https://github.com/TARS-AI-Community/TARS-AI/blob/V2/ATTRIBUTION.md)
+
+We are immensely grateful to the TARS-AI Community for pioneering the physical TARS robot and establishing the character framework that makes this project possible.
+
+#### James-von-Detroit/tars-ai Fork
+- **Repository**: [James-von-Detroit/tars-ai](https://github.com/James-von-Detroit/tars-ai)
+- **License**: CC-BY-NC 4.0
+- **Contribution**: Hardware integration, foundation for v3.0
+
+### Inspired By
+
+**TARS from *Interstellar* (2014)**
+- Director/Writer: Christopher Nolan
+- Writer: Jonathan Nolan
+- TARS Performed by: Bill Irwin (voice and motion capture)
+- Studios: Paramount Pictures, Warner Bros., Legendary Pictures
+
+*This is a fan-made, educational tribute. No commercial use.*
+
+### Powered By Open Source
+
+- **Meta Llama 3** - Language model (Llama 3 Community License)
+- **Ollama** - Local LLM serving (MIT)
+- **Faster-Whisper** - Speech recognition (MIT)
+- **Piper TTS** - Text-to-speech (MIT)
+- **OpenWakeWord** - Wake word detection (Apache 2.0)
+- **LLaVA** - Vision language model (Apache 2.0)
+- **OpenCV** - Computer vision (Apache 2.0)
+- **PyTorch, NumPy, SciPy, and many more** - See [ATTRIBUTION.md](ATTRIBUTION.md)
+
+### Complete Attribution
+
+**Required Attribution Statement:**
 ```
 Portions of this software are derived from TARS-AI © TARS-AI Community 
 (via fork by James-von-Detroit), licensed under CC-BY-NC 4.0.
 ```
 
-**Complete documentation:** See [LICENSE.md](LICENSE.md), [ATTRIBUTION.md](ATTRIBUTION.md), [CREDITS.md](CREDITS.md)
+For complete credits, licenses, and attribution details, see:
+- [**ATTRIBUTION.md**](ATTRIBUTION.md) - Full attribution documentation
+- [**CREDITS.md**](CREDITS.md) - Quick credits reference
+- [**LICENSE.md**](LICENSE.md) - Dual license details
 
 ---
 
-### Original TARS Character
+## 📜 License
 
-TARS is a character from *Interstellar* (2014)
-- **Directed by:** Christopher Nolan
-- **Written by:** Jonathan Nolan and Christopher Nolan
-- **TARS Performed by:** Bill Irwin
-- **Studios:** Paramount Pictures, Warner Bros., Legendary Pictures
+### Dual License Structure
 
-This project is a fan-made tribute and educational implementation. We claim no rights to the TARS character or *Interstellar* intellectual property.
+**gptars v3.0** uses dual licensing:
 
----
+- ✅ **New code** (macOS installer, voice/vision engines, docs): **MIT License**
+- ⚠️ **Derived portions** (TARS personality concepts): **CC-BY-NC 4.0**
 
-### Fork Hierarchy
+**What this means:**
+- New technical code can be used commercially (MIT)
+- TARS character/personality requires attribution and non-commercial use (CC-BY-NC 4.0)
+- Complete project follows most restrictive terms (CC-BY-NC 4.0)
 
-```
-TARS-AI Community (CC-BY-NC 4.0)
-  ↓
-James-von-Detroit/tars-ai (CC-BY-NC 4.0)
-  ↓
-gptars v3.0 (MIT + CC-BY-NC 4.0 dual license)
-```
-
-**Upstream Projects:**
-
-1. **TARS-AI Community Project** - Original TARS robot recreation
-   - Repository: [TARS-AI-Community/TARS-AI](https://github.com/TARS-AI-Community/TARS-AI)
-   - License: CC-BY-NC 4.0
-   - Attribution: [Guidelines](https://github.com/TARS-AI-Community/TARS-AI/blob/V2/ATTRIBUTION.md)
-
-2. **James-von-Detroit/tars-ai Fork** - Foundation for v3.0
-   - Repository: [James-von-Detroit/tars-ai](https://github.com/James-von-Detroit/tars-ai)
-   - License: CC-BY-NC 4.0 (inherited)
+See [**LICENSE.md**](LICENSE.md) for complete details.
 
 ---
 
-### Open Source Dependencies
+## 🤝 Community
 
-All dependencies retain their original licenses:
+### Get Involved
 
-- **Ollama** (MIT) - Local LLM serving ([ollama.ai](https://ollama.ai))
-- **Meta Llama 3** (Llama 3 Community License) - Language model ([ai.meta.com/llama](https://ai.meta.com/llama/))
-- **Faster-Whisper** (MIT) - Speech recognition ([github.com/SYSTRAN/faster-whisper](https://github.com/SYSTRAN/faster-whisper))
-- **Piper TTS** (MIT) - Text-to-speech ([github.com/rhasspy/piper](https://github.com/rhasspy/piper))
-- **OpenWakeWord** (Apache 2.0) - Wake word detection ([github.com/dscripka/openWakeWord](https://github.com/dscripka/openWakeWord))
-- **LLaVA** (Apache 2.0) - Vision model ([llava-vl.github.io](https://llava-vl.github.io))
-- **OpenCV** (Apache 2.0) - Computer vision ([opencv.org](https://opencv.org))
-- **PyTorch** (BSD), **Transformers** (Apache 2.0), **NumPy** (BSD), and many more
+- **⭐ Star this repo** if you like it!
+- **🐛 Report bugs** via [GitHub Issues](https://github.com/James-von-Detroit/tars-ai/issues)
+- **💡 Suggest features** in [Discussions](https://github.com/James-von-Detroit/tars-ai/discussions)
+- **🔀 Submit PRs** with improvements
+- **📖 Improve docs** - documentation PRs always welcome
 
-See [ATTRIBUTION.md](ATTRIBUTION.md) for complete list.
+### Join the Community
 
----
+- **Discord**: Join the original [TARS-AI Community Discord](https://discord.gg/tars-ai)
+- **Reddit**: r/TARS_AI
+- **This Repo**: [Discussions](https://github.com/James-von-Detroit/tars-ai/discussions) and [Issues](https://github.com/James-von-Detroit/tars-ai/issues)
 
-### Version History
+### Contributors
 
-- **v3.0 Alpha** (December 2024) - Complete rewrite for Apple Silicon
-  - Full offline operation
-  - Native ARM support with Metal GPU
-  - Vision capabilities added
-  - Enhanced personality system
-  - Wake word detection
-  - Sub-second latency on M3/M4
-
-- **v2.x** - Original TARS-AI (hardware-focused, Raspberry Pi)
-- **v1.x** - Initial proof of concept
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Areas where you can help:
-
-- **Voice Training:** Create a TARS-accurate TTS voice model
-- **Performance:** Optimize latency and memory usage
-- **Features:** Add new capabilities (tools, integrations)
-- **Documentation:** Improve guides and tutorials
-- **Testing:** Report bugs and edge cases
-
-Please see `CONTRIBUTING.md` for guidelines.
+Thank you to everyone who contributed to:
+- TARS-AI Community project
+- James-von-Detroit's tars-ai fork
+- Open-source libraries we depend on
+- The Interstellar production team for inspiring this work
 
 ---
 
 ## ⚠️ Disclaimer
 
-This is an **alpha release** (v3.0). Expect:
-- Occasional bugs and rough edges
-- API changes between versions
-- Incomplete features
-- Active development
+This is a **fan-made, educational project** inspired by TARS from *Interstellar*. This project is not endorsed by, affiliated with, or sponsored by Christopher Nolan, Paramount Pictures, Warner Bros., Legendary Pictures, or any other rights holders.
 
-**This is a hobbyist/enthusiast project.** While we strive for quality, this is not production software.
+**Status**: Alpha software. Expect bugs and rough edges. Not production-ready.
 
 ---
 
-## 💬 Community
+## 📞 Contact
 
-- **Discord:** [Join our server](https://discord.gg/tars-ai)
-- **GitHub Discussions:** Ask questions, share builds
-- **Reddit:** r/TARS_AI
-
----
-
-## 🙏 Thank You
-
-Special thanks to:
-- The original TARS-AI team for inspiring this project
-- The open-source AI community
-- Christopher and Jonathan Nolan for creating TARS
-- Everyone who contributes to and uses this project
-
----
-
-## 📧 Contact
-
-For questions, suggestions, or collaboration:
-- Open an issue on GitHub
-- Join our Discord
-- Email: [your-email]
+- **Issues**: [GitHub Issues](https://github.com/James-von-Detroit/tars-ai/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/James-von-Detroit/tars-ai/discussions)
+- **Email**: [Your contact if you want to add]
 
 ---
 
 <p align="center">
   <strong>"That's not saying much."</strong><br>
-  — TARS
+  — TARS, Interstellar (2014)
 </p>
 
 <p align="center">
-  Made with ❤️ for TARS fans and AI enthusiasts<br>
+  Made with ❤️ by the TARS community<br>
   100% offline • 100% open source • 100% TARS
+</p>
+
+<p align="center">
+  <sub>gptars v3.0 Alpha | December 2024 | macOS ARM</sub>
 </p>
