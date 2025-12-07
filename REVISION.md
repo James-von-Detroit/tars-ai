@@ -4,6 +4,48 @@ All notable changes to this fork are documented here.
 
 ---
 
+## [3.3.0] — 2025-12-07
+
+### 🎉 Major Release: Native ARM TTS & Continuous Listening Mode
+
+This release brings significant improvements to macOS ARM compatibility, TTS quality, and user experience with a new continuous listening mode.
+
+### Fixed — Piper TTS Native ARM64 Support
+- **Piper Python Package** — Switched from x86_64 binary to native `piper-tts` Python package
+- **ARM64 Compatibility** — Resolved `incompatible architecture (have 'arm64', need 'x86_64')` errors
+- **TARS Voice Model** — Now using custom `TARS.onnx` voice model from upstream project
+- **Upstream Parity** — TTS implementation now matches upstream TARS-AI approach exactly
+
+### Fixed — Ollama API Compatibility
+- **Native API Endpoint** — Switched from `/v1/chat/completions` to native `/api/chat`
+- **Response Parsing** — Fixed JSON response parsing for native Ollama format
+- **Model Selection** — Added `llama3:8b-instruct-q4_0` as recommended instruction-tuned model
+
+### Added — Continuous Listening Mode
+- **Voice Activity Detection** — Auto-detect speech start/stop without push-to-talk
+- **Energy-based VAD** — Simple, reliable speech detection using audio energy levels
+- **Configurable Thresholds** — Adjustable silence duration and speech length requirements
+- **Mode Selection** — Interactive menu to choose between push-to-talk and continuous listening
+
+### Added — TTS Testing Infrastructure
+- **`gptars/tests/tts_comparison.py`** — Test script to compare original TARS samples vs Piper output
+- **Voice Quality Benchmarking** — Side-by-side audio comparison tooling
+
+### Changed — Installer Updates
+- **Model Selection** — Added `llama3:8b-instruct-q4_0` as option 2 (recommended)
+- **Reordered Options** — Better organization of LLM model choices in installer menu
+
+### Technical Details
+- **Piper Package** — `piper-tts` 1.3.0 with native ARM64 wheel (`macosx_11_0_arm64`)
+- **Voice Model** — `TARS.onnx` (22050Hz, trained with Piper 1.0.0)
+- **TTS Settings** — Using model defaults (noise_scale=0.667, length_scale=1, noise_w=0.8)
+
+### Removed
+- **Custom Synthesis Config** — Removed experimental TTS tuning, using model defaults instead
+- **Sentence Pauses** — Removed artificial pauses between sentences (not in upstream)
+
+---
+
 ## [3.0.2] — 2025-12-07
 
 ### 📦 Package Structure & Import Fixes

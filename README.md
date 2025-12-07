@@ -1,7 +1,7 @@
-# GPTars v3.0.2 — macOS ARM TARS Voice Assistant 🤖
+# GPTars v3.3.0 — macOS ARM TARS Voice Assistant 🤖
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.0.2-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-3.3.0-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/platform-macOS%20ARM-brightgreen?style=for-the-badge&logo=apple" alt="Platform" />
   <img src="https://img.shields.io/badge/python-3.11+-blue?style=for-the-badge&logo=python" alt="Python" />
   <img src="https://img.shields.io/badge/offline-100%25-green?style=for-the-badge" alt="Offline" />
@@ -103,16 +103,17 @@ python3 -m pytest gptars/tests/ -v
 
 ## 🎯 Why This Fork?
 
-**This is the primary development branch** of James-von-Detroit's TARS fork. While the original TARS-AI Community project focuses on Raspberry Pi hardware robots, **GPTars v3.0 brings TARS to macOS with full offline voice and vision capabilities.**
+**This is the primary development branch** of James-von-Detroit's TARS fork. While the original TARS-AI Community project focuses on Raspberry Pi hardware robots, **GPTars v3.3 brings TARS to macOS with full offline voice and vision capabilities.**
 
-| Feature | Original TARS (v2) | **GPTars v3.0** |
+| Feature | Original TARS (v2) | **GPTars v3.3** |
 |---------|-------------------|-----------------|
 | **Platform** | Raspberry Pi | **macOS ARM (M1/M2/M3/M4)** |
 | **Voice Input** | Cloud-dependent | **Faster-Whisper w/ Metal GPU (~280ms)** |
-| **Intelligence** | Cloud APIs ($$$) | **Llama-3-8B Q4 local (FREE)** |
-| **Voice Output** | Basic TTS | **Piper TTS (high-quality)** |
+| **Intelligence** | Cloud APIs ($$$) | **Llama-3-8B-Instruct local (FREE)** |
+| **Voice Output** | Basic TTS | **Piper TTS (TARS voice model)** |
 | **Vision** | ❌ None | **✅ LLaVA-1.6 via webcam** |
 | **Wake Word** | ❌ None | **✅ "Hey TARS" (OpenWakeWord)** |
+| **Listening Mode** | Push-to-talk only | **✅ Continuous VAD + Push-to-talk** |
 | **Latency** | 5-15 seconds | **<2s end-to-end** |
 | **Cost** | ~$0.01-0.10/conversation | **$0 after install** |
 | **Privacy** | Cloud-dependent | **100% offline** |
@@ -133,7 +134,7 @@ python3 -m pytest gptars/tests/ -v
 │  THIS FORK                                                               │
 │  github.com/James-von-Detroit/tars-ai                                    │
 │  ├── upstream/     ← Original v2 code (synced, untouched)               │
-│  ├── gptars/       ← NEW: v3.0 macOS ARM offline voice+vision (MIT)     │
+│  ├── gptars/       ← NEW: v3.3 macOS ARM offline voice+vision (MIT)     │
 │  └── shared/       ← Hardware files (3D prints, CAD)                    │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
@@ -142,7 +143,7 @@ python3 -m pytest gptars/tests/ -v
 
 ```
 tars-ai/
-├── 📂 gptars/                      # ← v3.0 CODE (MIT where applicable)
+├── 📂 gptars/                      # ← v3.3 CODE (MIT where applicable)
 │   ├── core/                       #    Voice, vision, wake word engines
 │   │   ├── voice_engine.py         #    STT → LLM → TTS pipeline
 │   │   ├── vision_engine.py        #    LLaVA camera integration
@@ -152,7 +153,7 @@ tars-ai/
 │   │   ├── install_macos.sh        #    One-click installer (with logging)
 │   │   └── requirements-macos.txt  #    ARM-optimized dependencies
 │   ├── docs/                       #    All documentation
-│   └── tests/                      #    Test suite
+│   └── tests/                      #    Test suite (including TTS comparison)
 │
 ├── 📂 upstream/                    # ← UPSTREAM CODE (CC-BY-NC 4.0)
 │   ├── src/                        #    Original Raspberry Pi Python code
@@ -163,6 +164,9 @@ tars-ai/
 │   ├── 3d Printer Files/           #    STL files for physical TARS
 │   └── CAD/                        #    Design files
 │
+├── 📂 voices/                      # ← TTS VOICE MODELS
+│   └── TARS.onnx                   #    Custom TARS voice model (22050Hz)
+│
 ├── 📄 README.md                    # ← You are here
 ├── 📄 LICENSE.md                   #    Dual license explanation
 ├── 📄 DEPRECATION.md               #    Deprecated upstream files list
@@ -172,7 +176,7 @@ tars-ai/
 
 ### 🔄 Deprecated Files from Upstream v2
 
-GPTars v3.0 is a complete rewrite for macOS ARM with offline capabilities. The original Raspberry Pi code is preserved in `upstream/` but not used. Key changes:
+GPTars v3.3 is a complete rewrite for macOS ARM with offline capabilities. The original Raspberry Pi code is preserved in `upstream/` but not used. Key changes:
 
 **Core rewrites:**
 - `upstream/src/app.py` → `gptars/core/voice_engine.py` — New: Faster-Whisper STT, Piper TTS, 100% offline
@@ -606,14 +610,21 @@ See [gptars/docs/TROUBLESHOOTING.md](gptars/docs/TROUBLESHOOTING.md) for complet
 
 ## 🗺️ Roadmap
 
-### v3.1 (Q1 2025)
-- [ ] TARS voice cloning with custom Piper model
+### v3.3 (December 2025) ✅ CURRENT
+- [x] Native ARM64 Piper TTS (piper-tts Python package)
+- [x] TARS.onnx custom voice model integration
+- [x] Continuous listening mode with VAD
+- [x] Ollama native API support
+- [x] TTS comparison testing infrastructure
+
+### v3.4 (Q1 2025)
+- [ ] TARS voice fine-tuning improvements
 - [ ] Web UI for personality sliders
 - [ ] HomeKit integration
 - [ ] Custom wake word training
 - [ ] Multi-language support
 
-### v3.2 (Q2 2025)
+### v3.5 (Q2 2025)
 - [ ] Robot body control interface (bridge to hardware)
 - [ ] Gesture recognition via camera
 - [ ] Multi-modal responses (voice + display)
@@ -694,7 +705,7 @@ https://github.com/TARS-AI-Community/TARS-AI
 
 ## 🤝 Contributing
 
-### To v3.0 (macOS)
+### To v3.3+ (macOS)
 1. Fork this repo
 2. Create a branch: `git checkout -b feature/my-feature`
 3. Make changes in `gptars/`
@@ -733,5 +744,5 @@ This is a **fan-made, educational project** inspired by TARS from *Interstellar*
 </p>
 
 <p align="center">
-  <sub>GPTars v3.1.0 | December 2025 | macOS ARM</sub>
+  <sub>GPTars v3.3.0 | December 2025 | macOS ARM</sub>
 </p>

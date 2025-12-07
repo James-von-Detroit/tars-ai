@@ -13,7 +13,7 @@ This package provides a complete voice assistant pipeline with:
 For more info: https://github.com/James-von-Detroit/tars-ai
 """
 
-__version__ = "3.0.2"
+__version__ = "3.3.0"
 __author__ = "James-von-Detroit"
 __license__ = "MIT"
 

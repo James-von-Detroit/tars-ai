@@ -25,6 +25,7 @@ import os
 import sys
 import time
 import json
+import re
 import threading
 import queue
 from pathlib import Path
@@ -33,7 +34,10 @@ from typing import Optional, Callable
 import numpy as np
 import sounddevice as sd
 import soundfile as sf
+import wave
+from io import BytesIO
 from faster_whisper import WhisperModel
+from piper import PiperVoice
 import requests
 
 # Import TARS personality (relative import within core package)
@@ -58,7 +62,7 @@ class VoiceEngine:
         whisper_model: str = "distil-large-v3",
         ollama_url: str = "http://localhost:11434",
         ollama_model: str = "llama3:8b-instruct-q4_0",
-        piper_voice: str = "en_US-lessac-medium",
+        piper_voice: str = "TARS",
         sample_rate: int = 16000,
         verbose: bool = True
     ):
@@ -127,18 +131,28 @@ class VoiceEngine:
             print("✓ Whisper loaded")
     
     def _init_piper(self, voice_name: str):
-        """Initialize Piper TTS."""
-        self.piper_voice = voice_name
-        self.piper_binary = self.voices_path / "piper" / "piper"  # piper/piper from tarball
-        self.piper_model = self.voices_path / f"{voice_name}.onnx"
+        """Initialize Piper TTS using Python package."""
+        self.piper_voice_name = voice_name
+        self.piper_model_path = self.voices_path / f"{voice_name}.onnx"
         
-        if not self.piper_binary.exists():
-            raise FileNotFoundError(f"Piper binary not found at {self.piper_binary}")
-        if not self.piper_model.exists():
-            raise FileNotFoundError(f"Piper model not found at {self.piper_model}")
+        if not self.piper_model_path.exists():
+            raise FileNotFoundError(f"Piper model not found at {self.piper_model_path}")
+        
+        # Load Piper voice using Python package (native ARM64 support)
+        if self.verbose:
+            print(f"Loading Piper voice: {voice_name}...")
+        
+        self.piper_voice = PiperVoice.load(str(self.piper_model_path))
+        
+        # Store native TTS sample rate (22050 Hz for TARS voice)
+        self.tts_sample_rate = self.piper_voice.config.sample_rate
+        
+        # Use model defaults (from TARS.onnx.json) - no custom config needed
+        # The TARS model was trained with: noise_scale=0.667, length_scale=1, noise_w=0.8
+        self.synthesis_config = None  # Use model defaults
         
         if self.verbose:
-            print(f"✓ Piper configured with {voice_name}")
+            print(f"✓ Piper loaded ({voice_name}, {self.piper_voice.config.sample_rate}Hz)")
     
     def record_audio(self, duration: int = 5) -> np.ndarray:
         """
@@ -218,22 +232,24 @@ class VoiceEngine:
         # Add current message
         messages.append({"role": "user", "content": user_input})
         
-        # Call Ollama API
+        # Call Ollama API (native endpoint, not OpenAI-compatible)
         try:
             response = requests.post(
-                f"{self.ollama_url}/v1/chat/completions",
+                f"{self.ollama_url}/api/chat",
                 json={
                     "model": self.ollama_model,
                     "messages": messages,
-                    "temperature": 0.8,
-                    "max_tokens": 200,  # Keep responses concise
+                    "options": {
+                        "temperature": 0.8,
+                        "num_predict": 200  # Keep responses concise
+                    },
                     "stream": False
                 },
                 timeout=30
             )
             response.raise_for_status()
             
-            tars_response = response.json()['choices'][0]['message']['content'].strip()
+            tars_response = response.json()['message']['content'].strip()
             
             # Store in conversation history
             self.conversation_history.append({
@@ -256,7 +272,12 @@ class VoiceEngine:
     
     def text_to_speech(self, text: str) -> np.ndarray:
         """
-        Convert text to speech using Piper.
+        Convert text to speech using Piper with sentence-based synthesis.
+        
+        Uses the exact same approach as upstream TARS-AI project:
+        - Split at sentence boundaries
+        - Synthesize each chunk with model defaults
+        - Concatenate audio chunks
         
         Args:
             text: Text to convert
@@ -266,41 +287,35 @@ class VoiceEngine:
         """
         start_time = time.time()
         
-        # Create temp file for output
-        temp_wav = "/tmp/tars_tts_output.wav"
-        
-        # Run Piper
-        import subprocess
-        
         try:
-            # Piper reads from stdin and writes to stdout
-            process = subprocess.Popen(
-                [
-                    str(self.piper_binary),
-                    "--model", str(self.piper_model),
-                    "--output_file", temp_wav
-                ],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
+            # Split at sentence boundaries like upstream does
+            chunks = re.split(r'(?<=\.)\s', text)
             
-            stdout, stderr = process.communicate(input=text.encode('utf-8'), timeout=10)
+            all_audio = []
             
-            if process.returncode != 0:
-                raise RuntimeError(f"Piper failed: {stderr.decode()}")
+            for chunk in chunks:
+                if chunk.strip():
+                    # Synthesize to BytesIO buffer (upstream approach)
+                    wav_buffer = BytesIO()
+                    with wave.open(wav_buffer, 'wb') as wav_file:
+                        wav_file.setnchannels(1)  # Mono
+                        wav_file.setsampwidth(2)  # 16-bit samples
+                        wav_file.setframerate(self.tts_sample_rate)
+                        # Use model defaults - no custom config
+                        self.piper_voice.synthesize_wav(chunk.strip(), wav_file)
+                    
+                    # Read back the audio
+                    wav_buffer.seek(0)
+                    audio_chunk, sr = sf.read(wav_buffer)
+                    all_audio.append(audio_chunk)
             
-            # Load the generated audio
-            audio, sr = sf.read(temp_wav)
+            # Combine all audio chunks
+            if all_audio:
+                audio = np.concatenate(all_audio)
+            else:
+                audio = np.array([])
             
-            # Resample if needed
-            if sr != self.sample_rate:
-                import scipy.signal
-                audio = scipy.signal.resample(
-                    audio,
-                    int(len(audio) * self.sample_rate / sr)
-                )
-            
+            self._last_tts_sample_rate = self.tts_sample_rate
             self.metrics['tts_time'] = time.time() - start_time
             
             if self.verbose:
@@ -313,17 +328,20 @@ class VoiceEngine:
                 print(f"❌ TTS Error: {e}")
             return np.array([])
     
-    def play_audio(self, audio: np.ndarray):
+    def play_audio(self, audio: np.ndarray, sample_rate: int = None):
         """
         Play audio through speakers.
         
         Args:
             audio: Audio data to play
+            sample_rate: Sample rate (defaults to TTS native rate)
         """
         if len(audio) == 0:
             return
         
-        sd.play(audio, self.sample_rate)
+        # Use TTS native sample rate (22050 Hz) for best quality
+        rate = sample_rate or getattr(self, '_last_tts_sample_rate', self.tts_sample_rate)
+        sd.play(audio, rate)
         sd.wait()
     
     def process_voice_input(self, duration: int = 5) -> dict:
@@ -371,6 +389,121 @@ class VoiceEngine:
             'tars_text': tars_text,
             'metrics': self.metrics.copy()
         }
+    
+    def _detect_speech_energy(self, audio: np.ndarray, threshold: float = 0.01) -> bool:
+        """
+        Simple energy-based speech detection.
+        
+        Args:
+            audio: Audio data as numpy array
+            threshold: Energy threshold for speech detection
+            
+        Returns:
+            True if speech detected, False otherwise
+        """
+        energy = np.sqrt(np.mean(audio ** 2))
+        return energy > threshold
+    
+    def continuous_listen_mode(self, silence_threshold: float = 0.01, 
+                                min_speech_duration: float = 0.5,
+                                max_silence_duration: float = 1.5,
+                                chunk_duration: float = 0.5):
+        """
+        Continuous listening mode - automatically detects when you speak.
+        No need to press Enter!
+        
+        Args:
+            silence_threshold: RMS threshold below which is considered silence
+            min_speech_duration: Minimum seconds of speech to trigger processing
+            max_silence_duration: Seconds of silence after speech to stop recording
+            chunk_duration: Duration of each audio chunk to analyze
+        """
+        print("\n" + "=" * 70)
+        print("TARS VOICE INTERFACE - Continuous Listening Mode")
+        print("=" * 70)
+        print(f"\nUser name: {self.tars.user_name}")
+        print(f"Honesty: {self.tars.settings.honesty}%")
+        print(f"Humor: {self.tars.settings.humor}%")
+        print(f"Discretion: {self.tars.settings.discretion}%")
+        print("\n🎤 Listening... (just start talking!)")
+        print("Press Ctrl+C to exit")
+        print("=" * 70 + "\n")
+        
+        chunk_samples = int(chunk_duration * self.sample_rate)
+        
+        try:
+            while True:
+                # Wait for speech to start
+                audio_buffer = []
+                speech_started = False
+                silence_chunks = 0
+                max_silence_chunks = int(max_silence_duration / chunk_duration)
+                min_speech_chunks = int(min_speech_duration / chunk_duration)
+                speech_chunks = 0
+                
+                while True:
+                    # Record a chunk
+                    chunk = sd.rec(chunk_samples, samplerate=self.sample_rate, 
+                                   channels=1, dtype='float32')
+                    sd.wait()
+                    chunk = chunk.flatten()
+                    
+                    # Check for speech
+                    has_speech = self._detect_speech_energy(chunk, silence_threshold)
+                    
+                    if has_speech:
+                        if not speech_started:
+                            if self.verbose:
+                                print("🎙️  Speech detected, recording...")
+                            speech_started = True
+                        speech_chunks += 1
+                        silence_chunks = 0
+                        audio_buffer.append(chunk)
+                    elif speech_started:
+                        silence_chunks += 1
+                        audio_buffer.append(chunk)  # Include trailing silence
+                        
+                        # Stop if enough silence after speech
+                        if silence_chunks >= max_silence_chunks:
+                            if speech_chunks >= min_speech_chunks:
+                                break  # Process the audio
+                            else:
+                                # Too short, reset
+                                if self.verbose:
+                                    print("⚠️  Speech too short, ignoring...")
+                                audio_buffer = []
+                                speech_started = False
+                                silence_chunks = 0
+                                speech_chunks = 0
+                
+                # Process the recorded audio
+                if audio_buffer:
+                    audio = np.concatenate(audio_buffer)
+                    
+                    if self.verbose:
+                        print(f"📝 Processing {len(audio)/self.sample_rate:.1f}s of audio...")
+                    
+                    # Speech to text
+                    user_text = self.speech_to_text(audio)
+                    
+                    if user_text:
+                        # Get TARS response
+                        tars_text = self.get_tars_response(user_text)
+                        
+                        # Convert to speech and play
+                        tars_audio = self.text_to_speech(tars_text)
+                        self.play_audio(tars_audio)
+                        
+                        if self.verbose:
+                            print(f"\n⚡ Response latency: {self.metrics['stt_time'] + self.metrics['llm_time'] + self.metrics['tts_time']:.2f}s")
+                            print("\n🎤 Listening...\n")
+                    else:
+                        if self.verbose:
+                            print("⚠️  No speech recognized")
+                            print("\n🎤 Listening...\n")
+        
+        except KeyboardInterrupt:
+            print("\n\n👋 TARS shutting down. Goodbye.")
     
     def interactive_mode(self):
         """
@@ -424,8 +557,23 @@ def main():
     # Initialize voice engine
     engine = VoiceEngine(verbose=True)
     
-    # Run interactive mode
-    engine.interactive_mode()
+    # Mode selection
+    print("\n" + "-" * 40)
+    print("Select mode:")
+    print("  1) Press-to-talk (press Enter to speak)")
+    print("  2) Continuous listening (auto-detect speech)")
+    print("-" * 40)
+    
+    try:
+        mode = input("Enter choice [1/2, default=2]: ").strip() or "2"
+    except (EOFError, KeyboardInterrupt):
+        print("\n👋 Goodbye.")
+        sys.exit(0)
+    
+    if mode == "1":
+        engine.interactive_mode()
+    else:
+        engine.continuous_listen_mode()
 
 
 if __name__ == "__main__":

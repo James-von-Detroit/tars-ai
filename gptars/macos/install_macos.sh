@@ -561,13 +561,14 @@ download_llm_model() {
     echo ""
     echo -e "${YELLOW}Select LLM model to download:${NC}"
     echo ""
-    echo "  1) llama3.2:3b      - Small & fast (~2GB, good for 8GB Macs)"
-    echo "  2) llama3:8b        - Recommended balance (~4.7GB, best quality)"
-    echo "  3) mistral          - Alternative high quality (~4GB)"
-    echo "  4) phi3:mini        - Tiny & fast (~2GB, Microsoft)"
-    echo "  5) Skip for now"
+    echo "  1) llama3.2:3b            - Small & fast (~2GB, good for 8GB Macs)"
+    echo "  2) llama3:8b-instruct-q4_0 - ⭐ Recommended for TARS (~4.7GB, instruction-tuned)"
+    echo "  3) llama3:8b              - Base model (~4.7GB)"
+    echo "  4) mistral                - Alternative high quality (~4GB)"
+    echo "  5) phi3:mini              - Tiny & fast (~2GB, Microsoft)"
+    echo "  6) Skip for now"
     echo ""
-    read -t 120 -p "Enter choice [1-5, default=2]: " model_choice || model_choice="2"
+    read -t 120 -p "Enter choice [1-6, default=2]: " model_choice || model_choice="2"
     model_choice="${model_choice:-2}"
     
     case $model_choice in
@@ -575,12 +576,15 @@ download_llm_model() {
             run_cmd "Downloading llama3.2:3b" "ollama pull llama3.2:3b" true
             ;;
         2)
-            run_cmd "Downloading llama3:8b" "ollama pull llama3:8b" true
+            run_cmd "Downloading llama3:8b-instruct-q4_0" "ollama pull llama3:8b-instruct-q4_0" true
             ;;
         3)
-            run_cmd "Downloading mistral" "ollama pull mistral" true
+            run_cmd "Downloading llama3:8b" "ollama pull llama3:8b" true
             ;;
         4)
+            run_cmd "Downloading mistral" "ollama pull mistral" true
+            ;;
+        5)
             run_cmd "Downloading phi3:mini" "ollama pull phi3:mini" true
             ;;
         *)
