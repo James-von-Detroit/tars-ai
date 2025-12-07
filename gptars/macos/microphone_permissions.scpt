@@ -1,3 +1,7 @@
+(* SPDX-License-Identifier: MIT *)
+(* Copyright (c) 2024–2025 James-von-Detroit *)
+(* Part of GPTars v3.0 — https://github.com/James-von-Detroit/tars-ai *)
+
 -- gptars v3.0 - Microphone and Camera Permission Request
 -- This script triggers macOS permission dialogs for microphone and camera access
 -- Run this after installation to ensure TARS can access audio/video input

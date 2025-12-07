@@ -1,4 +1,11 @@
 #!/bin/bash
+# SPDX-License-Identifier: CC-BY-NC-4.0
+# Copyright (c) TARS-AI Community
+# Licensed under Creative Commons Attribution-NonCommercial 4.0 International
+#
+# Original source: https://github.com/TARS-AI-Community/TARS-AI
+# This file may not be used for commercial purposes.
+
 # TARS System Installation Protocol
 # Atomikspace / Pyrater / TeknikL
 
