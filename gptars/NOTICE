@@ -1,0 +1,130 @@
+NOTICE
+
+================================================================================
+gptars v3.0 Alpha
+================================================================================
+
+Copyright (c) 2024 James-von-Detroit
+
+This product includes software developed by James-von-Detroit and contributors.
+
+================================================================================
+DUAL LICENSE NOTICE
+================================================================================
+
+This software is licensed under a dual-license structure:
+
+1. NEW CODE AND CONTRIBUTIONS: MIT License
+   Copyright (c) 2024 James-von-Detroit
+   
+2. DERIVED UPSTREAM WORKS: CC-BY-NC 4.0
+   Portions of this software are derived from TARS-AI © TARS-AI Community 
+   (via fork by James-von-Detroit), licensed under CC-BY-NC 4.0.
+
+For the complete license text, see LICENSE.md.
+
+================================================================================
+ATTRIBUTION REQUIREMENTS (CC-BY-NC 4.0)
+================================================================================
+
+When using portions derived from upstream TARS-AI projects, you must:
+
+1. Provide proper attribution to:
+   - TARS-AI Community (https://github.com/TARS-AI-Community/TARS-AI)
+   - James-von-Detroit fork (https://github.com/James-von-Detroit/tars-ai)
+   - TARS character from Interstellar (2014) by Christopher Nolan
+
+2. Indicate if you modified the derived portions
+
+3. Not use for commercial purposes
+
+4. Share adaptations under the same CC-BY-NC 4.0 license
+
+See ATTRIBUTION.md for complete attribution guidelines and requirements.
+
+================================================================================
+THIRD-PARTY SOFTWARE
+================================================================================
+
+This software includes or depends upon the following open-source projects:
+
+Core AI/ML:
+- Meta Llama 3 (Llama 3 Community License)
+- Ollama (MIT License)
+- Faster-Whisper (MIT License)
+- Piper TTS (MIT License)
+- OpenWakeWord (Apache 2.0)
+- LLaVA (Apache 2.0)
+- OpenCV (Apache 2.0)
+- PyTorch (BSD License)
+- Transformers by Hugging Face (Apache 2.0)
+
+Python Libraries:
+- NumPy (BSD License)
+- SciPy (BSD License)
+- Pillow (HPND License)
+- sounddevice (MIT License)
+- requests (Apache 2.0)
+- And others - see requirements-macos.txt
+
+Each of these projects retains its own license. For complete details, see 
+ATTRIBUTION.md and the respective project repositories.
+
+================================================================================
+TRADEMARK NOTICE
+================================================================================
+
+"TARS" and "Interstellar" are trademarks of their respective owners. This 
+project does not claim any trademark rights and uses these terms for 
+descriptive purposes only under fair use.
+
+================================================================================
+NO WARRANTY
+================================================================================
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+LEGAL DISCLAIMER
+================================================================================
+
+This is a fan-made, educational project inspired by the TARS character from
+the film Interstellar (2014). This project is not endorsed by, affiliated 
+with, or sponsored by Christopher Nolan, Paramount Pictures, Warner Bros., 
+Legendary Pictures, or any other rights holders.
+
+Character personality elements are used under fair use principles for:
+- Educational purposes
+- Non-commercial fan tribute
+- Transformative implementation as software
+
+No commercial use is permitted due to CC-BY-NC 4.0 license restrictions on
+upstream derivative works.
+
+================================================================================
+CONTACT INFORMATION
+================================================================================
+
+For licensing questions:
+- New MIT-licensed code: James-von-Detroit (GitHub)
+- CC-BY-NC 4.0 portions: See https://github.com/TARS-AI-Community/TARS-AI
+- Commercial use inquiries: Contact TARS-AI Community
+
+For attribution guidelines:
+See https://github.com/TARS-AI-Community/TARS-AI/blob/V2/ATTRIBUTION.md
+
+Project repository:
+https://github.com/James-von-Detroit/tars-ai
+
+================================================================================
+
+This NOTICE file must be included in all copies or substantial portions of
+the software, as required by both MIT and CC-BY-NC 4.0 licenses.
+
+Last Updated: December 7, 2024
