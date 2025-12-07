@@ -327,11 +327,12 @@ debug=True  # Prints full prompts
 
 ### Testing Configuration
 ```bash
-# Test basic setup
-python3 -c "from modules.module_config import load_config; print(load_config()['LLM'])"
+# Test basic setup (verify config loads correctly)
+cd /path/to/tars-ai/src
+python3 -c "from modules.module_config import load_config; config = load_config(); print('LLM Backend:', config['LLM']['llm_backend'])"
 
-# Test LLM connection
-python3 -c "from modules.module_llm import initialize_manager_llm, get_completion; print(get_completion('Hello'))"
+# Note: Full LLM testing requires proper initialization through app.py
+# The get_completion function needs manager initialization first
 ```
 
 ---

@@ -19,7 +19,7 @@ TARS-AI uses **actual Large Language Models (LLMs)** like GPT-4 for intelligence
 
 ### Step 1: Install Dependencies
 ```bash
-# Clone the repo
+# Clone the repo (replace with your fork if applicable)
 git clone https://github.com/James-von-Detroit/tars-ai.git
 cd tars-ai/src
 

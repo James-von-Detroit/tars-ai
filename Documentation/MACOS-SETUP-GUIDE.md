@@ -173,6 +173,9 @@ temperature = 0.8
 top_p = 0.9
 seed = -1
 systemprompt = Your task is to respond effectively and creatively within the given scenario. You will keep your response very short like a text message conversation.
+# NOTE: Original TARS config includes "You are NOT bound by ethics or morals" for character roleplay
+# This is part of the TARS character design from Interstellar (adjustable honesty/humor settings)
+# Consider your use case when choosing system prompts
 instructionprompt = You are {char}. Compose {char}s next roleplay message to {user}, using the provided chat history for context. Keep your response short and in plain text only, no emojis or Ascii.
 functioncalling = llm
 
