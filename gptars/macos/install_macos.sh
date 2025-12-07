@@ -910,24 +910,56 @@ run_smoke_test() {
     # shellcheck disable=SC1091
     source "$VENV_DIR/bin/activate"
     
-    print_status "Testing OpenWakeWord can load..."
+    print_status "Testing Python imports and core components..."
     
     local smoke_result
     smoke_result=$(python3 << 'PYTHON_SMOKE' 2>&1
 import sys
+import os
+
+# Set PYTHONPATH to repo root
+sys.path.insert(0, os.getcwd())
+
 try:
-    # Test 1: Can we import openwakeword?
-    from openwakeword.model import Model
-    print("✓ openwakeword imported")
+    # Test 1: Can we import gptars package?
+    try:
+        import gptars
+        print("✓ gptars package imported")
+    except ImportError as e:
+        print(f"✗ gptars package import failed: {e}")
+        sys.exit(1)
     
-    # Test 2: Can we import faster_whisper?
+    # Test 2: Can we import core modules?
+    try:
+        from gptars.core.tars_personality import TARSPersonality, DEFAULT_TARS
+        print("✓ gptars.core.tars_personality imported")
+        
+        # Test personality creation
+        tars = DEFAULT_TARS
+        response = tars.generate_response("Hello TARS", use_ollama=False)
+        if response:
+            print("✓ TARS personality working")
+    except ImportError as e:
+        print(f"✗ gptars.core.tars_personality import failed: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"○ TARS personality test warning: {e}")
+    
+    # Test 3: Can we import openwakeword?
+    try:
+        from openwakeword.model import Model
+        print("✓ openwakeword imported")
+    except ImportError:
+        print("○ openwakeword not installed (optional)")
+    
+    # Test 4: Can we import faster_whisper?
     try:
         from faster_whisper import WhisperModel
         print("✓ faster_whisper imported")
     except ImportError:
         print("○ faster_whisper not installed (optional)")
     
-    # Test 3: Can we check Ollama?
+    # Test 5: Can we check Ollama?
     import urllib.request
     try:
         with urllib.request.urlopen("http://localhost:11434/api/tags", timeout=2) as response:
@@ -939,16 +971,23 @@ try:
     print("Smoke test PASSED - core components loaded!")
     sys.exit(0)
 except Exception as e:
-    print(f"Smoke test warning: {e}")
-    sys.exit(0)  # Don't fail install on smoke test issues
+    print(f"Smoke test error: {e}")
+    import traceback
+    traceback.print_exc()
+    sys.exit(1)
 PYTHON_SMOKE
 )
     
     echo "$smoke_result"
     log "SMOKE" "$smoke_result"
     
-    print_success "Smoke test completed"
-    return 0
+    if echo "$smoke_result" | grep -q "Smoke test PASSED"; then
+        print_success "Smoke test completed successfully"
+        return 0
+    else
+        print_warning "Smoke test completed with warnings (see above)"
+        return 0
+    fi
 }
 
 # =============================================================================
