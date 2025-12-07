@@ -34,7 +34,7 @@ pydub==0.25.1               # Audio manipulation
 # Wake Word Detection
 # ============================================================================
 openwakeword==0.6.0         # Lightweight wake word detection
-onnx==1.16.2                # ONNX model support
+onnx==1.17.0                # ONNX model support (patched for CVE path traversal)
 tflite-runtime==2.14.0      # TensorFlow Lite (if needed for some models)
 
 # ============================================================================
@@ -42,8 +42,8 @@ tflite-runtime==2.14.0      # TensorFlow Lite (if needed for some models)
 # ============================================================================
 opencv-python==4.10.0.84    # Camera access and image processing
 pillow==10.4.0              # Image handling
-transformers==4.45.0        # HuggingFace transformers for vision models
-torch==2.4.1                # PyTorch for vision models (CPU version)
+transformers==4.48.0        # HuggingFace transformers (patched for deserialization CVE)
+torch==2.6.0                # PyTorch (patched for RCE vulnerability)
 accelerate==0.34.2          # Model optimization
 
 # ============================================================================
@@ -93,3 +93,8 @@ flake8==7.1.1               # Code linting
 # 4. For best performance, run on macOS 13+ (Ventura or later)
 # 5. Total install size: ~5-8 GB (including models)
 # 6. Installation time: 10-20 minutes depending on internet speed
+# 
+# SECURITY UPDATES (December 2024):
+# - onnx updated to 1.17.0 (fixes CVE path traversal vulnerability)
+# - torch updated to 2.6.0 (fixes RCE vulnerability in torch.load)
+# - transformers updated to 4.48.0 (fixes deserialization vulnerabilities)
