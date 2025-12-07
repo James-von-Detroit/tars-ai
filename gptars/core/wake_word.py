@@ -1,12 +1,12 @@
 """
 core/wake_word.py
 
-Wake Word Detection for gptars v3.0 Alpha
+Wake Word Detection for gptars v3.1.0
 
 Listens for "Hey TARS" wake word using OpenWakeWord (free, offline).
 Optimized for Apple Silicon with low latency detection.
 
-Author: gptars v3.0
+Author: gptars v3.1
 """
 
 import os
@@ -321,7 +321,7 @@ class TARSWakeWordListener:
 def main():
     """Main entry point for wake word detection testing."""
     print("\n" + "=" * 70)
-    print("gptars v3.0 Alpha - Wake Word Detection Test")
+    print("gptars v3.1.0 - Wake Word Detection Test")
     print("=" * 70)
     print()
     

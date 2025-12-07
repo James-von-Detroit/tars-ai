@@ -26,7 +26,8 @@ scipy==1.14.1               # Signal processing for audio
 # ============================================================================
 # Text-to-Speech (TTS)
 # ============================================================================
-piper-tts==1.2.0            # Fast, high-quality local TTS
+# NOTE: piper-tts Python package does NOT support macOS ARM64
+# We use the pre-built Piper binary instead (installed by install_macos.sh)
 onnxruntime==1.19.2         # ONNX runtime for Piper models
 pydub==0.25.1               # Audio manipulation
 
@@ -35,7 +36,8 @@ pydub==0.25.1               # Audio manipulation
 # ============================================================================
 openwakeword==0.6.0         # Lightweight wake word detection
 onnx==1.17.0                # ONNX model support (patched for CVE path traversal)
-tflite-runtime==2.14.0      # TensorFlow Lite (if needed for some models)
+# NOTE: tflite-runtime is NOT available for macOS ARM64
+# OpenWakeWord uses ONNX runtime on macOS (already installed above)
 
 # ============================================================================
 # Vision Support (LLaVA / Moondream2)
@@ -51,7 +53,7 @@ accelerate==0.34.2          # Model optimization
 # ============================================================================
 sentence-transformers==3.1.1  # Embeddings for semantic search
 chromadb==0.5.5             # Vector database for memory
-hyperdb-python==0.0.5       # Alternative vector DB (lightweight)
+hyperdb-python==0.1.4       # Alternative vector DB (lightweight) - updated version
 scikit-learn==1.5.2         # ML utilities
 
 # ============================================================================

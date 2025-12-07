@@ -1,7 +1,7 @@
 """
 core/voice_engine.py
 
-Voice Pipeline for gptars v3.0 Alpha
+Voice Pipeline for gptars v3.1.0
 
 Complete STT → LLM → TTS pipeline for offline voice interaction with TARS.
 Optimized for Apple Silicon (M1/M2/M3/M4) with <800ms target latency.
@@ -12,7 +12,7 @@ Components:
 - Text-to-Speech: Piper TTS
 - Wake Word: OpenWakeWord
 
-Author: gptars v3.0
+Author: gptars v3.1
 """
 
 import os
@@ -30,8 +30,8 @@ import soundfile as sf
 from faster_whisper import WhisperModel
 import requests
 
-# Import TARS personality
-from tars_personality import TARSPersonality, DEFAULT_TARS
+# Import TARS personality (relative import within core package)
+from .tars_personality import TARSPersonality, DEFAULT_TARS
 
 
 class VoiceEngine:
@@ -74,10 +74,11 @@ class VoiceEngine:
         self.sample_rate = sample_rate
         self.verbose = verbose
         
-        # Paths
-        self.base_path = Path(__file__).parent.parent
+        # Paths - repo root is parent.parent.parent for files in gptars/core/
+        self.base_path = Path(__file__).parent.parent  # gptars/
+        self.repo_root = self.base_path.parent         # GPTars/
         self.models_path = self.base_path / "models"
-        self.voices_path = self.base_path / "voices"
+        self.voices_path = self.repo_root / "voices"   # voices/ at repo root
         
         # Initialize components
         self._init_whisper(whisper_model)
@@ -122,7 +123,7 @@ class VoiceEngine:
     def _init_piper(self, voice_name: str):
         """Initialize Piper TTS."""
         self.piper_voice = voice_name
-        self.piper_binary = self.voices_path / "piper"
+        self.piper_binary = self.voices_path / "piper" / "piper"  # piper/piper from tarball
         self.piper_model = self.voices_path / f"{voice_name}.onnx"
         
         if not self.piper_binary.exists():
@@ -394,7 +395,7 @@ class VoiceEngine:
 def main():
     """Main entry point for voice engine."""
     print("\n" + "=" * 70)
-    print("gptars v3.0 Alpha - Voice Engine")
+    print("gptars v3.1.0 - Voice Engine")
     print("=" * 70)
     print()
     

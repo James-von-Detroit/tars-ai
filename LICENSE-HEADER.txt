@@ -1,0 +1,77 @@
+# ============================================================================
+#                        LICENSE HEADERS FOR THIS REPOSITORY
+# ============================================================================
+#
+# Copy the appropriate header to the top of your source files.
+# See LICENSE.md for full license details.
+#
+# ============================================================================
+
+
+# ==============================================================================
+# MIT LICENSE HEADER — Use for files in gptars/
+# ==============================================================================
+#
+# For: .py, .sh, .md files in gptars/ directory
+#
+# Python/Shell style (# comments):
+# ------------------------------------------------------------------------------
+
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2024–2025 James-von-Detroit
+#
+# Part of GPTars v3.0 — 100% offline TARS voice assistant for macOS.
+# https://github.com/James-von-Detroit/tars-ai
+
+# ------------------------------------------------------------------------------
+# Markdown/HTML style (<!-- comments -->):
+# ------------------------------------------------------------------------------
+
+<!-- SPDX-License-Identifier: MIT -->
+<!-- Copyright (c) 2024–2025 James-von-Detroit -->
+<!-- Part of GPTars v3.0 — https://github.com/James-von-Detroit/tars-ai -->
+
+# ------------------------------------------------------------------------------
+# AppleScript style (* comments *):
+# ------------------------------------------------------------------------------
+
+(* SPDX-License-Identifier: MIT *)
+(* Copyright (c) 2024–2025 James-von-Detroit *)
+(* Part of GPTars v3.0 — https://github.com/James-von-Detroit/tars-ai *)
+
+
+# ==============================================================================
+# CC-BY-NC 4.0 HEADER — Use for files in upstream/ and shared/
+# ==============================================================================
+#
+# For: All files in upstream/ and shared/ directories
+#
+# Python/Shell style (# comments):
+# ------------------------------------------------------------------------------
+
+# SPDX-License-Identifier: CC-BY-NC-4.0
+# Copyright (c) TARS-AI Community
+# Licensed under Creative Commons Attribution-NonCommercial 4.0 International
+#
+# Original source: https://github.com/TARS-AI-Community/TARS-AI
+# This file may not be used for commercial purposes.
+
+# ------------------------------------------------------------------------------
+# Markdown/HTML style (<!-- comments -->):
+# ------------------------------------------------------------------------------
+
+<!-- SPDX-License-Identifier: CC-BY-NC-4.0 -->
+<!-- Copyright (c) TARS-AI Community — https://github.com/TARS-AI-Community/TARS-AI -->
+<!-- Licensed under CC-BY-NC 4.0 — Non-commercial use only -->
+
+
+# ==============================================================================
+# SPDX LICENSE IDENTIFIERS QUICK REFERENCE
+# ==============================================================================
+#
+#   MIT            → SPDX-License-Identifier: MIT
+#   CC-BY-NC-4.0   → SPDX-License-Identifier: CC-BY-NC-4.0
+#
+# Learn more: https://spdx.org/licenses/
+#
+# ==============================================================================

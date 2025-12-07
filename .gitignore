@@ -1,12 +1,15 @@
-# Byte-compiled / optimized / DLL files
+# =============================================================================
+# TARS-AI Fork — .gitignore
+# Covers: Python, macOS, IDEs, TARS-specific files
+# =============================================================================
+
+# =============================================================================
+# Python
+# =============================================================================
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
-
-# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -20,11 +23,17 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.env.local
 
 # PyInstaller
 *.manifest
@@ -34,7 +43,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit test / coverage
 htmlcov/
 .tox/
 .nox/
@@ -47,31 +56,7 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
-cover/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-.pybuilder/
-target/
+pytest_cache/
 
 # Jupyter Notebook
 .ipynb_checkpoints
@@ -83,124 +68,153 @@ ipython_config.py
 # pyenv
 .python-version
 
-# pipenv
-Pipfile.lock
-
-# poetry
-poetry.lock
-
-# pdm
-pdm.lock
-.pdm.toml
-.pdm-python
-.pdm-build/
-
-# PEP 582
-__pypackages__/
-
-# Celery stuff
+# Celery
 celerybeat-schedule
 celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
 
 # mypy
 .mypy_cache/
 .dmypy.json
 dmypy.json
 
-# Pyre type checker
+# Pyre
 .pyre/
 
-# pytype static type analyzer
-.pytype/
+# =============================================================================
+# macOS
+# =============================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
 
-# Cython debug symbols
-cython_debug/
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+Thumbs.db
+
+# Files that might appear in root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# =============================================================================
+# IDEs and Editors
+# =============================================================================
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
 
 # PyCharm
 .idea/
+*.iml
+*.iws
+*.ipr
 
-# LLM and Vision Files
-llm/
-vision/
-config.ini
-config_backup.ini
-output.wav
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
 
-# Memory files
-*.pickle.gz
-TARS.wav
-/memory/initial_memory.json
-/memory/initial_memory.loaded
-src/memory/flashrank_cache
-memory/initial_memory.json
-memory/initial_memory.loaded
-initial_memory.loaded
-src/memory/initial_memory.loaded
-src/memory/initial_memory.json
-initial_memory.json
+# Vim
+*.swp
+*.swo
+*.swn
+*~
 
-# Character Data
-character/persona.ini
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
 
-# Speech-to-text (STT) Folder (ignored except for specific file)
-stt/
-!stt/hey-tars_en_raspberry-pi_v3_0_0.ppn
+# =============================================================================
+# TARS-specific
+# =============================================================================
 
-# Ignore everything inside "character" by default
-character/
-# Unignore specific directories for TARS, KIPP, CASE, and PLEX
-!character/TARS/
-!character/TARS/images/
-!character/TARS/images/neutral/
-!character/TARS/images/neutral/**
+# Environment files with secrets
+.env
+*.env
+!.env.template
+!.env.example
+!upstream/.env.template
 
-!character/KIPP/
-!character/KIPP/images/
-!character/KIPP/images/neutral/
-!character/KIPP/images/neutral/**
-
-!character/CASE/
-!character/CASE/images/
-!character/CASE/images/neutral/
-!character/CASE/images/neutral/**
-
-!character/PLEX/
-!character/PLEX/images/
-!character/PLEX/images/neutral/
-!character/PLEX/images/neutral/** 
-
+# Model files (large, downloaded at runtime)
+*.gguf
+*.bin
+*.safetensors
 *.onnx
-*.onnx.json
-!TARS.onnx
-!TARS.onnx.json
-!CASE.onnx
-!CASE.onnx.json
-!KIPP.onnx
-!KIPP.onnx.json
-!PLEX.onnx
-!PLEX.onnx.json
+!gptars/models/.gitkeep
 
-src/modules/UI/ui_layout.json
-/src/modules/UI/ui_layout.json
+# Voice/audio files generated at runtime
+*.wav
+*.mp3
+*.ogg
+!gptars/tests/fixtures/*.wav
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Memory/vector store
+*.hyperdb
+*.pkl
+*.pickle
+
+# Log files
+*.log
+logs/
+tars-install-*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Downloaded models directory
+models/
+!gptars/models/
+voices/
+!gptars/voices/.gitkeep
+
+# =============================================================================
+# Build and Distribution
+# =============================================================================
+*.dmg
+*.pkg
+*.app
+*.exe
+*.msi
+
+# =============================================================================
+# Secrets and Credentials (NEVER commit these)
+# =============================================================================
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+credentials/
+api_keys.json
+gptars/models/whisper/
