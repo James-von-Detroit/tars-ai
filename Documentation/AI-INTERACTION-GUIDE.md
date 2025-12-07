@@ -367,11 +367,13 @@ max_tokens = 200  # Limit response length
 
 ### 1. Copy TARS Character
 ```bash
-cp -r /src/character/TARS /src/character/MYCHAR
+# From the repository root directory
+cd /path/to/tars-ai
+cp -r src/character/TARS src/character/MYCHAR
 ```
 
 ### 2. Edit Character JSON
-Edit `/src/character/MYCHAR/MYCHAR.json`:
+Edit `src/character/MYCHAR/MYCHAR.json`:
 ```json
 {
   "char_name": "MYCHAR",
@@ -383,7 +385,7 @@ Edit `/src/character/MYCHAR/MYCHAR.json`:
 ```
 
 ### 3. Edit Personality
-Edit `/src/character/MYCHAR/persona.ini`:
+Edit `src/character/MYCHAR/persona.ini`:
 ```ini
 [PERSONA]
 humor = 50

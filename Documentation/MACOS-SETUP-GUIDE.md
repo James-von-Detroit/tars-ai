@@ -51,10 +51,13 @@ OPENAI_API_KEY="sk-your-key-here"
 
 ### 4. Configure for macOS (No Hardware)
 ```bash
-# Copy config template
-cp config.ini.template config.ini
+# Copy macOS-optimized config (recommended)
+cp config.ini.macos config.ini
 
-# Edit configuration
+# OR copy template and manually configure
+# cp config.ini.template config.ini
+
+# Edit configuration if needed
 nano config.ini
 ```
 
