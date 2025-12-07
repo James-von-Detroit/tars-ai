@@ -1,0 +1,95 @@
+# gptars v3.0 - macOS ARM (Apple Silicon) Requirements
+# Tested on: M1/M2/M3/M4 MacBooks with macOS 13+
+# Python: 3.11+
+#
+# All packages are ARM64-native and optimized for Apple Silicon
+
+# ============================================================================
+# Core LLM and API
+# ============================================================================
+openai==1.51.0              # OpenAI-compatible API client (used for Ollama)
+tiktoken==0.7.0             # Token counting for context management
+requests==2.32.3            # HTTP requests
+python-dotenv==1.0.1        # Environment variable management
+
+# ============================================================================
+# Speech-to-Text (STT) - Apple Silicon Optimized
+# ============================================================================
+faster-whisper==1.0.3       # Fast Whisper implementation with Metal GPU support
+coremltools==8.0            # Apple CoreML for ML acceleration
+pyaudio==0.2.14             # Audio I/O for microphone access
+sounddevice==0.5.1          # Alternative audio I/O
+soundfile==0.12.1           # Audio file reading/writing
+numpy==1.26.4               # Numerical operations (pinned for compatibility)
+scipy==1.14.1               # Signal processing for audio
+
+# ============================================================================
+# Text-to-Speech (TTS)
+# ============================================================================
+piper-tts==1.2.0            # Fast, high-quality local TTS
+onnxruntime==1.19.2         # ONNX runtime for Piper models
+pydub==0.25.1               # Audio manipulation
+
+# ============================================================================
+# Wake Word Detection
+# ============================================================================
+openwakeword==0.6.0         # Lightweight wake word detection
+onnx==1.16.2                # ONNX model support
+tflite-runtime==2.14.0      # TensorFlow Lite (if needed for some models)
+
+# ============================================================================
+# Vision Support (LLaVA / Moondream2)
+# ============================================================================
+opencv-python==4.10.0.84    # Camera access and image processing
+pillow==10.4.0              # Image handling
+transformers==4.45.0        # HuggingFace transformers for vision models
+torch==2.4.1                # PyTorch for vision models (CPU version)
+accelerate==0.34.2          # Model optimization
+
+# ============================================================================
+# Memory and Search
+# ============================================================================
+sentence-transformers==3.1.1  # Embeddings for semantic search
+chromadb==0.5.5             # Vector database for memory
+hyperdb-python==0.0.5       # Alternative vector DB (lightweight)
+scikit-learn==1.5.2         # ML utilities
+
+# ============================================================================
+# System and Utilities
+# ============================================================================
+pyobjc-core==10.3.1         # macOS system integration
+pyobjc-framework-Cocoa==10.3.1  # macOS UI framework access
+pyobjc-framework-AVFoundation==10.3.1  # Audio/Video framework
+psutil==6.0.0               # System monitoring
+click==8.1.7                # CLI framework
+rich==13.8.1                # Beautiful terminal output
+pyyaml==6.0.2               # YAML configuration
+toml==0.10.2                # TOML configuration
+
+# ============================================================================
+# Development and Testing
+# ============================================================================
+pytest==8.3.3               # Testing framework
+pytest-asyncio==0.24.0      # Async testing support
+black==24.8.0               # Code formatting
+flake8==7.1.1               # Code linting
+
+# ============================================================================
+# Optional: Advanced Features
+# ============================================================================
+# Uncomment if you want these features:
+
+# pyautogui==0.9.54         # Screen automation
+# mss==9.0.2                # Fast screenshot capture
+# keyboard==0.13.5          # Keyboard event handling
+# pynput==1.7.7             # Input monitoring
+
+# ============================================================================
+# NOTES:
+# ============================================================================
+# 1. All packages are tested on Apple Silicon (M1/M2/M3/M4)
+# 2. faster-whisper uses Metal GPU acceleration automatically
+# 3. torch is CPU-only; Metal support can be added with torch-mlx if needed
+# 4. For best performance, run on macOS 13+ (Ventura or later)
+# 5. Total install size: ~5-8 GB (including models)
+# 6. Installation time: 10-20 minutes depending on internet speed

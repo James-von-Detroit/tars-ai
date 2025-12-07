@@ -1,0 +1,118 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gptars"
+version = "3.0.0-alpha"
+description = "Fully local, private TARS-inspired voice assistant for Apple Silicon"
+readme = "README.md"
+authors = [
+    {name = "gptars Contributors"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+keywords = [
+    "tars",
+    "interstellar", 
+    "voice-assistant",
+    "speech-recognition",
+    "text-to-speech",
+    "llm",
+    "offline",
+    "privacy",
+    "apple-silicon",
+    "m1",
+    "m2",
+    "m3",
+    "m4"
+]
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.51.0",
+    "tiktoken>=0.7.0",
+    "requests>=2.32.3",
+    "python-dotenv>=1.0.1",
+    "faster-whisper>=1.0.3",
+    "coremltools>=8.0",
+    "pyaudio>=0.2.14",
+    "sounddevice>=0.5.1",
+    "soundfile>=0.12.1",
+    "numpy>=1.26.4,<2.0",
+    "scipy>=1.14.1",
+    "piper-tts>=1.2.0",
+    "onnxruntime>=1.19.2",
+    "pydub>=0.25.1",
+    "openwakeword>=0.6.0",
+    "onnx>=1.16.2",
+    "opencv-python>=4.10.0",
+    "pillow>=10.4.0",
+    "transformers>=4.45.0",
+    "torch>=2.4.1",
+    "accelerate>=0.34.2",
+    "sentence-transformers>=3.1.1",
+    "chromadb>=0.5.5",
+    "scikit-learn>=1.5.2",
+    "pyobjc-core>=10.3.1",
+    "pyobjc-framework-Cocoa>=10.3.1",
+    "pyobjc-framework-AVFoundation>=10.3.1",
+    "psutil>=6.0.0",
+    "click>=8.1.7",
+    "rich>=13.8.1",
+    "pyyaml>=6.0.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.3",
+    "pytest-asyncio>=0.24.0",
+    "black>=24.8.0",
+    "flake8>=7.1.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/[your-repo]/gptars"
+Documentation = "https://github.com/[your-repo]/gptars/tree/main/docs"
+Repository = "https://github.com/[your-repo]/gptars"
+Issues = "https://github.com/[your-repo]/gptars/issues"
+
+[tool.setuptools]
+packages = ["core", "macos"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.venv
+  | venv
+  | build
+  | dist
+  | models
+  | voices
+)/
+'''
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "integration: marks tests that require external services (Ollama, camera)",
+    "performance: marks performance benchmark tests",
+]
+addopts = "-v --strict-markers"
