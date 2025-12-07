@@ -19,10 +19,8 @@ import time
 import sys
 import os
 
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'core'))
-
-from tars_personality import (
+# Import using package-style imports
+from gptars.core.tars_personality import (
     PersonalitySettings,
     TARSPersonality,
     create_tars_personality,
@@ -278,7 +276,7 @@ class TestVoiceEngineIntegration:
     
     def test_llm_response(self, check_ollama):
         """Test getting LLM response (requires Ollama running)."""
-        from voice_engine import VoiceEngine
+        from gptars.core.voice_engine import VoiceEngine
         
         engine = VoiceEngine(verbose=False)
         response = engine.get_tars_response("Hello TARS")
@@ -289,7 +287,7 @@ class TestVoiceEngineIntegration:
     
     def test_tts_generation(self):
         """Test TTS audio generation."""
-        from voice_engine import VoiceEngine
+        from gptars.core.voice_engine import VoiceEngine
         
         engine = VoiceEngine(verbose=False)
         audio = engine.text_to_speech("Test")
@@ -306,7 +304,7 @@ class TestVisionEngineIntegration:
     def test_camera_access(self):
         """Test camera initialization."""
         try:
-            from vision_engine import VisionEngine
+            from gptars.core.vision_engine import VisionEngine
             vision = VisionEngine(verbose=False)
             success = vision.start_camera()
             vision.stop_camera()
