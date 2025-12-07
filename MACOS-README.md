@@ -127,6 +127,8 @@ OPENAI_API_KEY=not-needed-for-local
 
 **See [ARM-MAC-LOCAL-LLM-GUIDE.md](Documentation/ARM-MAC-LOCAL-LLM-GUIDE.md) for complete setup & testing plan**
 
+**🚀 Ready for Alpha Test?** See [M1-ALPHA-TEST-SETUP.md](Documentation/M1-ALPHA-TEST-SETUP.md) for step-by-step M1 Mac installation with Llama 3-8B!
+
 ---
 
 ## Alternative Configurations
@@ -154,25 +156,33 @@ openai_voice = alloy  # Choose: alloy, echo, fable, onyx, nova, shimmer
 
 ## Documentation
 
-Four comprehensive guides are available in `/Documentation/`:
+Five comprehensive guides are available in `/Documentation/`:
 
-1. **ARM-MAC-LOCAL-LLM-GUIDE.md** ⭐ NEW!
+1. **M1-ALPHA-TEST-SETUP.md** ⭐ NEW!
+   - Complete M1 Mac alpha test installation
+   - Llama 3-8B Q4 setup and testing
+   - TARS character configuration details
+   - Hardware options comparison (Mac vs Raspberry Pi)
+   - Voice operations explained
+   - 6-phase testing protocol
+
+2. **ARM-MAC-LOCAL-LLM-GUIDE.md**
    - Complete setup for ARM MacBooks (M1/M2/M3)
    - Local LLM with Ollama
    - Performance benchmarks
    - QA testing plan
 
-2. **AI-INTELLIGENCE-ANALYSIS.md**
+3. **AI-INTELLIGENCE-ANALYSIS.md**
    - Detailed analysis of AI capabilities
    - Architecture and technical details
    - Comparison to other AI systems
 
-2. **MACOS-SETUP-GUIDE.md**
+4. **MACOS-SETUP-GUIDE.md**
    - Complete setup instructions for macOS
    - Troubleshooting guide
    - Advanced configuration options
 
-3. **AI-INTERACTION-GUIDE.md**
+5. **AI-INTERACTION-GUIDE.md**
    - How to get the best responses
    - Memory management
    - Personality customization
