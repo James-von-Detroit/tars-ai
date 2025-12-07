@@ -180,6 +180,19 @@ brew install ffmpeg portaudio
 
 ## Usage Workflow
 
+### 0. Run All Tests (Recommended)
+Use the test runner to run all tests in sequence:
+
+```bash
+cd /home/runner/work/tars-ai/tars-ai
+
+# Run all tests interactively
+python3 testing/run_all_tests.py
+
+# Run specific tests (e.g., 1 and 3)
+python3 testing/run_all_tests.py --tests 1,3
+```
+
 ### 1. Quick Diagnostic (No ElevenLabs)
 Run tests with local Piper TTS only:
 
