@@ -79,7 +79,7 @@ test_check "Can import DEFAULT_TARS" \
     "python3 -c 'import sys; sys.path.insert(0, \".\"); from gptars.core.tars_personality import DEFAULT_TARS'"
 
 test_check "Can access gptars.__version__" \
-    "python3 -c 'import sys; sys.path.insert(0, \".\"); import gptars; assert gptars.__version__ == \"3.1.0\"'"
+    "python3 -c 'import sys; sys.path.insert(0, \".\"); import gptars; assert gptars.__version__ == \"3.0.2\"'"
 
 echo ""
 echo -e "${CYAN}License Header Tests:${NC}"

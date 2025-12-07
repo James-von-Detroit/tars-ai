@@ -43,7 +43,7 @@ cat << "BANNER"
  | |__| | |     | |/ ____ \ |_) |__) |
   \_____|_|     |_/_/    \_\___/____/
                                      
-         v3.1.0 – TARS Voice Assistant
+         v3.0.2 – TARS Voice Assistant
 BANNER
 echo -e "${NC}"
 

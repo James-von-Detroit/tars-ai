@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gptars"
-version = "3.0.0-alpha"
+version = "3.0.2"
 description = "Fully local, private TARS-inspired voice assistant for Apple Silicon"
 readme = "README.md"
 authors = [

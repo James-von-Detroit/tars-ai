@@ -1,7 +1,7 @@
-# GPTars v3.1.0 — macOS ARM TARS Voice Assistant 🤖
+# GPTars v3.0.2 — macOS ARM TARS Voice Assistant 🤖
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.1.0-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-3.0.2-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/platform-macOS%20ARM-brightgreen?style=for-the-badge&logo=apple" alt="Platform" />
   <img src="https://img.shields.io/badge/python-3.11+-blue?style=for-the-badge&logo=python" alt="Python" />
   <img src="https://img.shields.io/badge/offline-100%25-green?style=for-the-badge" alt="Offline" />
@@ -165,9 +165,28 @@ tars-ai/
 │
 ├── 📄 README.md                    # ← You are here
 ├── 📄 LICENSE.md                   #    Dual license explanation
+├── 📄 DEPRECATION.md               #    Deprecated upstream files list
 ├── 📄 FORK-STRATEGY.md             #    Fork architecture documentation
 └── 📄 REVISION.md                  #    Changelog
 ```
+
+### 🔄 Deprecated Files from Upstream v2
+
+GPTars v3.0 is a complete rewrite for macOS ARM with offline capabilities. The original Raspberry Pi code is preserved in `upstream/` but not used. Key changes:
+
+**Core rewrites:**
+- `upstream/src/app.py` → `gptars/core/voice_engine.py` — New: Faster-Whisper STT, Piper TTS, 100% offline
+- `upstream/src/modules/module_llm.py` → `gptars/core/tars_personality.py` — New: Local Llama-3 via Ollama
+- `upstream/Install.sh` → `gptars/macos/install_macos.sh` — New: macOS ARM installer with logging
+
+**Removed (RPi-specific):**
+- Hardware modules (GPIO, servos, battery monitoring)
+- Systemd autostart scripts
+- Cloud-dependent configuration files
+
+**Why preserved:** License compliance (CC-BY-NC 4.0), future upstream sync capability, transparency.
+
+📋 **[See complete list in DEPRECATION.md →](DEPRECATION.md)**
 
 ---
 

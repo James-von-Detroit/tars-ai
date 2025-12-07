@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ################################################################################
-# gptars v3.1 – macOS ARM One-Click Installer
+# gptars v3.0 – macOS ARM One-Click Installer
 # MIT License — © 2024-2025 James-von-Detroit
 ################################################################################
 #
@@ -33,7 +33,7 @@ set -o pipefail  # Catch pipe failures
 # =============================================================================
 # Version Info
 # =============================================================================
-INSTALLER_VERSION="3.1.0"
+INSTALLER_VERSION="3.0.2"
 SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
 
 # =============================================================================
@@ -42,7 +42,7 @@ SCRIPT_NAME="$(basename "${BASH_SOURCE[0]}")"
 show_help() {
     cat << 'HELPTEXT'
 ╔═══════════════════════════════════════════════════════════════════════════════╗
-║                   GPTars v3.1 – macOS ARM Installer                            ║
+║                   GPTars v3.0 – macOS ARM Installer                            ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
 
 USAGE:
@@ -408,7 +408,7 @@ show_banner() {
  | |__| | |     | |/ ____ \ |_) |__) |  / /___ 
   \_____|_|     |_/_/    \_\___/____/  /_____|
                                               
-          v3.1.0 – macOS ARM Installer
+          v3.0.2 – macOS ARM Installer
     100% Offline TARS Voice Assistant for M1+
 BANNER
     echo -e "${NC}"
@@ -1027,7 +1027,7 @@ main() {
     
     # Initialize log
     {
-        echo "GPTars v3.1 Installation Log"
+        echo "GPTars v3.0 Installation Log"
         echo "Installer version: $INSTALLER_VERSION"
         echo "Started: $(date)"
         echo "Mode: $INSTALL_MODE"

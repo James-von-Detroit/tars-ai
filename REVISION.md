@@ -4,6 +4,43 @@ All notable changes to this fork are documented here.
 
 ---
 
+## [3.0.2] — 2025-12-07
+
+### 📦 Package Structure & Import Fixes
+
+This release fixes all import errors and path issues after the repository restructure.
+
+### Added — Package Structure
+- **`gptars/__init__.py`** — Makes gptars a proper Python package with exports
+- **`DEPRECATION.md`** — Complete documentation of deprecated upstream files
+- **`validate_structure.sh`** — Automated validation script (21 tests)
+- **`IMPLEMENTATION_COMPLETE.md`** — Comprehensive implementation summary
+
+### Fixed — Import System
+- **Package imports** — All imports now use `from gptars.core import ...` pattern
+- **PYTHONPATH** — Set to repo root (not gptars/) for correct resolution
+- **Virtual environment** — Now at repo root (`tars-ai/venv/`)
+- **Test imports** — Updated test file to use package-style imports
+- **Module execution** — Use `python3 -m gptars.core.module` pattern
+
+### Changed — Scripts
+- **`run_tars.sh`** — Auto-cd to repo root, sets PYTHONPATH, updated menu with 6 options
+- **`gptars/macos/install_macos.sh`** — Enhanced smoke test validates package imports
+- **All Python files** — Added proper license headers (MIT for gptars/, CC-BY-NC for upstream/)
+
+### Changed — Documentation
+- **README.md** — Added "How to Run" section at top, deprecation summary with link to DEPRECATION.md
+- **LICENSE.md** — Comprehensive dual-license structure with usage scenarios
+- **Repository structure** — Clear separation of MIT (gptars/) and CC-BY-NC (upstream/) code
+
+### Validation
+- ✅ All 21 structure validation tests pass
+- ✅ All imports resolve correctly: `import gptars`, `from gptars.core import ...`
+- ✅ Scripts work from any location
+- ✅ Virtual environment at correct location
+
+---
+
 ## [3.1.0] — 2025-12-07
 
 ### 🎉 Release: Fully Working macOS Voice Pipeline
