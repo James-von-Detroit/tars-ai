@@ -129,52 +129,6 @@ OPENAI_API_KEY=not-needed-for-local
 
 ---
 
-## Local LLM Setup (Free & Private) 🆓
-
-### Use Ollama for On-Device AI
-
-Perfect for ARM MacBooks (M1/M2/M3)! Run AI completely offline and free.
-
-```bash
-# Install Ollama
-brew install ollama
-
-# Download a model
-ollama pull llama2          # 7B model (good for M1/M2)
-# OR
-ollama pull mistral         # 7B model (high quality)
-# OR for M2/M3 Pro/Max
-ollama pull llama2:13b      # 13B model (better quality)
-
-# Start server (in separate terminal)
-ollama serve
-```
-
-### Configure TARS for Local LLM
-
-In `config.ini`:
-```ini
-[LLM]
-llm_backend = ooba
-base_url = http://localhost:11434/v1
-openai_model = llama2  # or mistral, phi, etc.
-```
-
-In `.env`:
-```bash
-OPENAI_API_KEY=not-needed-for-local
-```
-
-**Benefits:**
-- ✅ **Zero cost** - No API fees
-- ✅ **100% private** - Data stays on your Mac
-- ✅ **Offline capable** - No internet needed after model download
-- ✅ **Optimized for Apple Silicon** - Uses Metal GPU acceleration
-
-**See [ARM-MAC-LOCAL-LLM-GUIDE.md](Documentation/ARM-MAC-LOCAL-LLM-GUIDE.md) for complete setup & testing plan**
-
----
-
 ## Alternative Configurations
 
 ### Use GPT-4 (Better Quality)
