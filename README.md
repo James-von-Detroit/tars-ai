@@ -1,7 +1,7 @@
-# GPTars v3.3.5 — macOS ARM TARS Voice Assistant 🤖
+# GPTars v3.3.6 — macOS ARM TARS Voice Assistant 🤖
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-3.3.5-blue?style=for-the-badge" alt="Version" />
+  <img src="https://img.shields.io/badge/version-3.3.6-blue?style=for-the-badge" alt="Version" />
   <img src="https://img.shields.io/badge/platform-macOS%20ARM-brightgreen?style=for-the-badge&logo=apple" alt="Platform" />
   <img src="https://img.shields.io/badge/python-3.11+-blue?style=for-the-badge&logo=python" alt="Python" />
   <img src="https://img.shields.io/badge/offline-100%25-green?style=for-the-badge" alt="Offline" />
@@ -532,7 +532,7 @@ listener.start()
 
 ### Phase 7: Voice Quality Diagnostic Suite
 
-**NEW in v3.3.5**: Comprehensive voice quality testing and optimization tools.
+**NEW in v3.3.6**: Audio cracking fix, conversation mode, and 20+ package upgrades.
 
 The `/testing` directory contains four diagnostic test scripts to identify and fix voice quality issues:
 
@@ -798,5 +798,5 @@ This is a **fan-made, educational project** inspired by TARS from *Interstellar*
 </p>
 
 <p align="center">
-  <sub>GPTars v3.3.5 | December 2025 | macOS ARM</sub>
+  <sub>GPTars v3.3.6 | December 2025 | macOS ARM</sub>
 </p>
