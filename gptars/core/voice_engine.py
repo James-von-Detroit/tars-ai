@@ -189,23 +189,28 @@ class VoiceEngine:
         # Include common STT misheard variants of "humor"
         # base.en often hears: "humerating", "humoring", "human rating", "you more"
         humor_words = r'(?:humor|humer|humour|humerating|humoring|human\s*rating|you\s*more|your\s*humor)'
+        # Match "to" or "up to" or "at"
+        to_pattern = r'(?:up\s+to|to|at)\s*'
         
         patterns = [
             # Humor patterns (including misheard variants)
-            (rf'set\s+{humor_words}\s+(?:to\s+)?(\d+)', 'humor'),
-            (rf'{humor_words}\s+(?:to\s+)?(\d+)', 'humor'),
-            (rf'{humor_words}\s+setting\s+(?:to\s+)?(\d+)', 'humor'),
-            (rf'change\s+(?:your\s+)?{humor_words}\s+(?:to\s+)?(\d+)', 'humor'),
+            # "you set your humor up to 100", "set humor to 80", "set your humor up to 100"
+            (rf'(?:you\s+)?set\s+(?:your\s+)?{humor_words}\s+{to_pattern}(\d+)', 'humor'),
+            (rf'{humor_words}\s+{to_pattern}(\d+)', 'humor'),
+            (rf'{humor_words}\s+setting\s+{to_pattern}(\d+)', 'humor'),
+            (rf'change\s+(?:your\s+)?{humor_words}\s+{to_pattern}(\d+)', 'humor'),
+            (rf'turn\s+(?:your\s+)?{humor_words}\s+{to_pattern}(\d+)', 'humor'),
+            (rf'put\s+(?:your\s+)?{humor_words}\s+{to_pattern}(\d+)', 'humor'),
             (r'(\d+)\s*(?:percent|%)?\s+humor', 'humor'),
             # "need to injure you to 100" -> humor to 100 (common mishearing)
             (r'(?:need\s+to\s+)?(?:injure|ensure)\s+(?:you|your?)\s+(?:to\s+)?(\d+)', 'humor'),
             # Honesty patterns
-            (r'set\s+honesty\s+(?:to\s+)?(\d+)', 'honesty'),
-            (r'honesty\s+(?:to\s+)?(\d+)', 'honesty'),
+            (rf'(?:you\s+)?set\s+(?:your\s+)?honesty\s+{to_pattern}(\d+)', 'honesty'),
+            (rf'honesty\s+{to_pattern}(\d+)', 'honesty'),
             (r'(\d+)\s*(?:percent|%)?\s+honesty', 'honesty'),
             # Discretion patterns
-            (r'set\s+discretion\s+(?:to\s+)?(\d+)', 'discretion'),
-            (r'discretion\s+(?:to\s+)?(\d+)', 'discretion'),
+            (rf'(?:you\s+)?set\s+(?:your\s+)?discretion\s+{to_pattern}(\d+)', 'discretion'),
+            (rf'discretion\s+{to_pattern}(\d+)', 'discretion'),
         ]
         
         for pattern, setting in patterns:
