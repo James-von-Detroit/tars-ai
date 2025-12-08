@@ -58,10 +58,18 @@ class VoiceEngine:
     5. Audio playback
     """
     
+    # Available STT models (speed vs accuracy trade-off)
+    STT_MODELS = {
+        'fast': 'base.en',           # ~0.3s, good for voice commands
+        'balanced': 'small.en',       # ~0.8s, better accuracy
+        'accurate': 'distil-large-v3', # ~3s, best accuracy
+        'turbo': 'large-v3-turbo',    # ~3s, turbo variant
+    }
+    
     def __init__(
         self,
         tars_personality: Optional[TARSPersonality] = None,
-        whisper_model: str = "distil-large-v3",
+        whisper_model: str = "base.en",  # Fast model for low latency
         ollama_url: str = "http://localhost:11434",
         ollama_model: str = "qwen2:1.5b",  # Fast model for low latency
         piper_voice: str = "TARS",
@@ -73,7 +81,7 @@ class VoiceEngine:
         
         Args:
             tars_personality: TARS personality instance
-            whisper_model: Whisper model name for STT
+            whisper_model: Whisper model name for STT (or preset: 'fast', 'balanced', 'accurate')
             ollama_url: Ollama server URL
             ollama_model: Model name in Ollama
             piper_voice: Piper TTS voice name
@@ -234,20 +242,28 @@ class VoiceEngine:
     
     def _init_whisper(self, model_name: str):
         """Initialize Faster-Whisper for STT."""
+        # Support preset names
+        actual_model = self.STT_MODELS.get(model_name, model_name)
+        
         if self.verbose:
-            print(f"Loading Whisper model: {model_name}...")
+            if model_name != actual_model:
+                print(f"Loading Whisper model: {actual_model} (preset: {model_name})")
+            else:
+                print(f"Loading Whisper model: {model_name}...")
         
         # Use CPU with int8 for best compatibility on Mac
         # Metal GPU support is automatic in faster-whisper on Apple Silicon
         self.whisper = WhisperModel(
-            model_name,
+            actual_model,
             device="cpu",
             compute_type="int8",
             download_root=str(self.models_path / "whisper")
         )
         
+        self.whisper_model_name = actual_model
+        
         if self.verbose:
-            print("✓ Whisper loaded")
+            print(f"✓ Whisper loaded ({actual_model})")
     
     def _init_piper(self, voice_name: str):
         """Initialize Piper TTS using Python package."""
@@ -317,11 +333,17 @@ class VoiceEngine:
         """
         start_time = time.time()
         
+        # Use smaller beam_size for faster models (speed vs accuracy trade-off)
+        # Fast models (tiny, base): beam_size=1 for speed
+        # Larger models: beam_size=5 for accuracy
+        fast_models = {'tiny', 'tiny.en', 'base', 'base.en'}
+        beam_size = 1 if self.whisper_model_name in fast_models else 5
+        
         # Faster-Whisper expects audio as float32
         segments, info = self.whisper.transcribe(
             audio,
             language="en",
-            beam_size=5,
+            beam_size=beam_size,
             vad_filter=True  # Voice Activity Detection for better accuracy
         )
         
