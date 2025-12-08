@@ -1,34 +1,34 @@
-# gptars v3.0 - macOS ARM (Apple Silicon) Requirements
+# gptars v3.3.5 - macOS ARM (Apple Silicon) Requirements
 # Tested on: M1/M2/M3/M4 MacBooks with macOS 13+
 # Python: 3.11+
+# Last Updated: July 2025
 #
 # All packages are ARM64-native and optimized for Apple Silicon
 
 # ============================================================================
 # Core LLM and API
 # ============================================================================
-openai==1.51.0              # OpenAI-compatible API client (used for Ollama)
-tiktoken==0.7.0             # Token counting for context management
-requests==2.32.3            # HTTP requests
+openai==2.9.0               # OpenAI-compatible API client (used for Ollama)
+tiktoken==0.12.0            # Token counting for context management
+requests==2.32.5            # HTTP requests
 python-dotenv==1.0.1        # Environment variable management
 
 # ============================================================================
 # Speech-to-Text (STT) - Apple Silicon Optimized
 # ============================================================================
-faster-whisper==1.0.3       # Fast Whisper implementation with Metal GPU support
+faster-whisper==1.2.1       # Fast Whisper implementation with Metal GPU support
 coremltools==8.0            # Apple CoreML for ML acceleration
 pyaudio==0.2.14             # Audio I/O for microphone access
-sounddevice==0.5.1          # Alternative audio I/O
-soundfile==0.12.1           # Audio file reading/writing
-numpy==1.26.4               # Numerical operations (pinned for compatibility)
-scipy==1.14.1               # Signal processing for audio
+sounddevice==0.5.3          # Alternative audio I/O (updated)
+soundfile==0.13.1           # Audio file reading/writing (updated)
+numpy==2.2.6                # Numerical operations (numpy 2.x for better performance)
+scipy==1.16.3               # Signal processing for audio (updated)
 
 # ============================================================================
 # Text-to-Speech (TTS)
 # ============================================================================
-# NOTE: piper-tts Python package does NOT support macOS ARM64
-# We use the pre-built Piper binary instead (installed by install_macos.sh)
-onnxruntime==1.19.2         # ONNX runtime for Piper models
+piper-tts==1.3.0            # Piper TTS Python package (native ARM64 support)
+onnxruntime==1.23.2         # ONNX runtime for Piper models (major update!)
 pydub==0.25.1               # Audio manipulation
 
 # ============================================================================
@@ -42,38 +42,39 @@ onnx==1.17.0                # ONNX model support (patched for CVE path traversal
 # ============================================================================
 # Vision Support (LLaVA / Moondream2)
 # ============================================================================
-opencv-python==4.10.0.84    # Camera access and image processing
-pillow==10.4.0              # Image handling
-transformers==4.48.0        # HuggingFace transformers (patched for deserialization CVE)
+opencv-python==4.12.0.88    # Camera access and image processing (updated)
+pillow==12.0.0              # Image handling (updated)
+transformers==4.57.3        # HuggingFace transformers (major update!)
 torch==2.6.0                # PyTorch (patched for RCE vulnerability)
-accelerate==0.34.2          # Model optimization
+accelerate==1.12.0          # Model optimization (updated)
 
 # ============================================================================
 # Memory and Search
 # ============================================================================
-sentence-transformers==3.1.1  # Embeddings for semantic search
-chromadb==0.5.5             # Vector database for memory
-hyperdb-python==0.1.4       # Alternative vector DB (lightweight) - updated version
-scikit-learn==1.5.2         # ML utilities
+sentence-transformers==5.1.2  # Embeddings for semantic search (updated)
+chromadb==1.3.5             # Vector database for memory (major update!)
+hyperdb-python==0.1.4       # Alternative vector DB (lightweight)
+scikit-learn==1.7.2         # ML utilities (updated)
+pandas==2.3.3               # Data handling (numpy 2.x compatible)
 
 # ============================================================================
 # System and Utilities
 # ============================================================================
-pyobjc-core==10.3.1         # macOS system integration
-pyobjc-framework-Cocoa==10.3.1  # macOS UI framework access
-pyobjc-framework-AVFoundation==10.3.1  # Audio/Video framework
-psutil==6.0.0               # System monitoring
-click==8.1.7                # CLI framework
-rich==13.8.1                # Beautiful terminal output
+pyobjc-core==12.1           # macOS system integration (updated)
+pyobjc-framework-Cocoa==12.1  # macOS UI framework access (updated)
+pyobjc-framework-AVFoundation==12.1  # Audio/Video framework (updated)
+psutil==7.1.3               # System monitoring (updated)
+click==8.3.1                # CLI framework (updated)
+rich==14.2.0                # Beautiful terminal output (updated)
 pyyaml==6.0.2               # YAML configuration
 toml==0.10.2                # TOML configuration
 
 # ============================================================================
 # Development and Testing
 # ============================================================================
-pytest==8.3.3               # Testing framework
-pytest-asyncio==0.24.0      # Async testing support
-black==24.8.0               # Code formatting
+pytest==9.0.2               # Testing framework (updated)
+pytest-asyncio==0.26.0      # Async testing support (updated)
+black==25.1.0               # Code formatting (updated)
 flake8==7.1.1               # Code linting
 
 # ============================================================================
@@ -96,7 +97,15 @@ flake8==7.1.1               # Code linting
 # 5. Total install size: ~5-8 GB (including models)
 # 6. Installation time: 10-20 minutes depending on internet speed
 # 
-# SECURITY UPDATES (December 2024):
-# - onnx updated to 1.17.0 (fixes CVE path traversal vulnerability)
-# - torch updated to 2.6.0 (fixes RCE vulnerability in torch.load)
+# VERSION HISTORY:
+# - v3.3.5 (July 2025): Major package upgrades for performance
+#   - faster-whisper 1.0.3 → 1.2.1 (better transcription)
+#   - onnxruntime 1.19.2 → 1.23.2 (faster inference)
+#   - transformers 4.48.0 → 4.57.3 (improved vision models)
+#   - chromadb 0.5.5 → 1.3.5 (better memory/search)
+#   - numpy 1.x → 2.x (performance improvements)
+#
+# SECURITY UPDATES:
+# - onnx 1.17.0 (fixes CVE path traversal vulnerability)
+# - torch 2.6.0 (fixes RCE vulnerability in torch.load)
 # - transformers updated to 4.48.0 (fixes deserialization vulnerabilities)

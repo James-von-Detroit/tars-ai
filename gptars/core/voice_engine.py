@@ -37,7 +37,7 @@ import soundfile as sf
 import wave
 from io import BytesIO
 from faster_whisper import WhisperModel
-from piper import PiperVoice
+from piper import PiperVoice, SynthesisConfig
 import requests
 
 # Import TARS personality (relative import within core package)
@@ -147,12 +147,21 @@ class VoiceEngine:
         # Store native TTS sample rate (22050 Hz for TARS voice)
         self.tts_sample_rate = self.piper_voice.config.sample_rate
         
-        # Use model defaults (from TARS.onnx.json) - no custom config needed
-        # The TARS model was trained with: noise_scale=0.667, length_scale=1, noise_w=0.8
-        self.synthesis_config = None  # Use model defaults
+        # Synthesis config for improved prosody
+        # - noise_w_scale: 1.0 = more natural phoneme duration variation
+        # - length_scale: 1.05 = slightly slower for better clarity
+        # - noise_scale: 0.75 = slight audio variation for naturalness
+        self.synthesis_config = SynthesisConfig(
+            noise_w_scale=1.0,
+            length_scale=1.05,
+            noise_scale=0.75
+        )
         
         if self.verbose:
             print(f"✓ Piper loaded ({voice_name}, {self.piper_voice.config.sample_rate}Hz)")
+            print(f"  Prosody settings: noise_w={self.synthesis_config.noise_w_scale}, "
+                  f"length={self.synthesis_config.length_scale}, "
+                  f"noise={self.synthesis_config.noise_scale}")
     
     def record_audio(self, duration: int = 5) -> np.ndarray:
         """
@@ -276,8 +285,8 @@ class VoiceEngine:
         
         Uses the exact same approach as upstream TARS-AI project:
         - Split at sentence boundaries
-        - Synthesize each chunk with model defaults
-        - Concatenate audio chunks
+        - Synthesize each chunk with improved prosody settings
+        - Concatenate audio chunks with crossfade to prevent cracking
         
         Args:
             text: Text to convert
@@ -295,25 +304,33 @@ class VoiceEngine:
             
             for chunk in chunks:
                 if chunk.strip():
-                    # Synthesize to BytesIO buffer (upstream approach)
+                    # Synthesize to BytesIO buffer with prosody config
                     wav_buffer = BytesIO()
                     with wave.open(wav_buffer, 'wb') as wav_file:
                         wav_file.setnchannels(1)  # Mono
                         wav_file.setsampwidth(2)  # 16-bit samples
                         wav_file.setframerate(self.tts_sample_rate)
-                        # Use model defaults - no custom config
-                        self.piper_voice.synthesize_wav(chunk.strip(), wav_file)
+                        # Use improved prosody config for more natural speech
+                        self.piper_voice.synthesize_wav(
+                            chunk.strip(), 
+                            wav_file,
+                            syn_config=self.synthesis_config
+                        )
                     
                     # Read back the audio
                     wav_buffer.seek(0)
                     audio_chunk, sr = sf.read(wav_buffer)
+                    
+                    # Convert to float32 for consistent processing
+                    audio_chunk = audio_chunk.astype(np.float32)
+                    
                     all_audio.append(audio_chunk)
             
-            # Combine all audio chunks
+            # Combine audio chunks with crossfade to prevent clicks/cracks
             if all_audio:
-                audio = np.concatenate(all_audio)
+                audio = self._crossfade_concat(all_audio)
             else:
-                audio = np.array([])
+                audio = np.array([], dtype=np.float32)
             
             self._last_tts_sample_rate = self.tts_sample_rate
             self.metrics['tts_time'] = time.time() - start_time
@@ -326,11 +343,61 @@ class VoiceEngine:
         except Exception as e:
             if self.verbose:
                 print(f"❌ TTS Error: {e}")
-            return np.array([])
+            return np.array([], dtype=np.float32)
+    
+    def _crossfade_concat(self, audio_chunks: list, crossfade_ms: int = 20) -> np.ndarray:
+        """
+        Concatenate audio chunks with crossfade to prevent clicking/cracking.
+        
+        Args:
+            audio_chunks: List of audio arrays to concatenate
+            crossfade_ms: Crossfade duration in milliseconds
+            
+        Returns:
+            Concatenated audio with smooth transitions
+        """
+        if not audio_chunks:
+            return np.array([], dtype=np.float32)
+        
+        if len(audio_chunks) == 1:
+            return audio_chunks[0]
+        
+        crossfade_samples = int(self.tts_sample_rate * crossfade_ms / 1000)
+        
+        # Start with first chunk
+        result = audio_chunks[0].copy()
+        
+        for chunk in audio_chunks[1:]:
+            if len(chunk) == 0:
+                continue
+                
+            # Determine crossfade length (can't exceed chunk lengths)
+            fade_len = min(crossfade_samples, len(result), len(chunk))
+            
+            if fade_len > 0:
+                # Create fade curves
+                fade_out = np.linspace(1, 0, fade_len).astype(np.float32)
+                fade_in = np.linspace(0, 1, fade_len).astype(np.float32)
+                
+                # Apply crossfade
+                result[-fade_len:] *= fade_out
+                chunk_copy = chunk.copy()
+                chunk_copy[:fade_len] *= fade_in
+                
+                # Overlap-add
+                result[-fade_len:] += chunk_copy[:fade_len]
+                
+                # Append the rest
+                result = np.concatenate([result, chunk_copy[fade_len:]])
+            else:
+                # No crossfade possible, just concatenate
+                result = np.concatenate([result, chunk])
+        
+        return result
     
     def play_audio(self, audio: np.ndarray, sample_rate: int = None):
         """
-        Play audio through speakers.
+        Play audio through speakers with proper buffering to prevent cracking.
         
         Args:
             audio: Audio data to play
@@ -341,7 +408,29 @@ class VoiceEngine:
         
         # Use TTS native sample rate (22050 Hz) for best quality
         rate = sample_rate or getattr(self, '_last_tts_sample_rate', self.tts_sample_rate)
-        sd.play(audio, rate)
+        
+        # Ensure audio is float32 for proper playback
+        if audio.dtype != np.float32:
+            audio = audio.astype(np.float32)
+        
+        # Normalize audio to prevent clipping (which causes cracking)
+        max_val = np.max(np.abs(audio))
+        if max_val > 0:
+            # Normalize to 90% to leave headroom
+            audio = audio / max_val * 0.9
+        
+        # Apply fade in/out to prevent pops at start/end
+        fade_samples = int(rate * 0.01)  # 10ms fade
+        if len(audio) > fade_samples * 2:
+            # Fade in
+            fade_in = np.linspace(0, 1, fade_samples)
+            audio[:fade_samples] *= fade_in
+            # Fade out
+            fade_out = np.linspace(1, 0, fade_samples)
+            audio[-fade_samples:] *= fade_out
+        
+        # Use larger blocksize for smoother playback (prevents buffer underruns)
+        sd.play(audio, rate, blocksize=2048)
         sd.wait()
     
     def process_voice_input(self, duration: int = 5) -> dict:
