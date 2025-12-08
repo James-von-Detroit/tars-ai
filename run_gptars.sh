@@ -270,6 +270,34 @@ run_prechecks() {
 }
 
 # =============================================================================
+# Cleanup Previous Processes
+# =============================================================================
+cleanup_previous() {
+    # Kill any existing TARS processes to prevent conflicts
+    local killed=0
+    
+    if pgrep -f "python.*gptars" > /dev/null 2>&1; then
+        pkill -9 -f "python.*gptars" 2>/dev/null || true
+        killed=1
+    fi
+    
+    if pgrep -f "voice_engine" > /dev/null 2>&1; then
+        pkill -9 -f "voice_engine" 2>/dev/null || true
+        killed=1
+    fi
+    
+    if pgrep -f "wake_word" > /dev/null 2>&1; then
+        pkill -9 -f "wake_word" 2>/dev/null || true
+        killed=1
+    fi
+    
+    if [ $killed -eq 1 ]; then
+        log_warn "Killed previous TARS processes"
+        sleep 1  # Give them time to fully terminate
+    fi
+}
+
+# =============================================================================
 # Mode Selection and Launch
 # =============================================================================
 show_menu() {
@@ -288,6 +316,8 @@ show_menu() {
 launch_tars() {
     local mode="$1"
     
+    # Clean up any previous instances first
+    cleanup_previous
     cd "$SCRIPT_DIR"
     
     case "$mode" in
