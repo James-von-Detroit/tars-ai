@@ -173,17 +173,39 @@ class VoiceEngine:
         """
         text_lower = text.lower().strip()
         
+        # Convert word numbers to digits (longer phrases first!)
+        word_to_num = [
+            ('one hundred', '100'), ('a hundred', '100'),
+            ('zero', '0'), ('one', '1'), ('two', '2'), ('three', '3'), ('four', '4'),
+            ('five', '5'), ('six', '6'), ('seven', '7'), ('eight', '8'), ('nine', '9'),
+            ('ten', '10'), ('twenty', '20'), ('thirty', '30'), ('forty', '40'), ('fifty', '50'),
+            ('sixty', '60'), ('seventy', '70'), ('eighty', '80'), ('ninety', '90'),
+            ('hundred', '100'),
+        ]
+        for word, num in word_to_num:
+            text_lower = re.sub(rf'\b{word}\b', num, text_lower)
+        
         # Patterns: "set humor to 80", "humor 90", "set honesty to 100"
+        # Include common STT misheard variants of "humor"
+        # base.en often hears: "humerating", "humoring", "human rating", "you more"
+        humor_words = r'(?:humor|humer|humour|humerating|humoring|human\s*rating|you\s*more|your\s*humor)'
+        
         patterns = [
-            (r'set\s+humor\s+(?:to\s+)?(\d+)', 'humor'),
-            (r'humor\s+(?:to\s+)?(\d+)', 'humor'),
-            (r'humor\s+setting\s+(?:to\s+)?(\d+)', 'humor'),
+            # Humor patterns (including misheard variants)
+            (rf'set\s+{humor_words}\s+(?:to\s+)?(\d+)', 'humor'),
+            (rf'{humor_words}\s+(?:to\s+)?(\d+)', 'humor'),
+            (rf'{humor_words}\s+setting\s+(?:to\s+)?(\d+)', 'humor'),
+            (rf'change\s+(?:your\s+)?{humor_words}\s+(?:to\s+)?(\d+)', 'humor'),
+            (r'(\d+)\s*(?:percent|%)?\s+humor', 'humor'),
+            # "need to injure you to 100" -> humor to 100 (common mishearing)
+            (r'(?:need\s+to\s+)?(?:injure|ensure)\s+(?:you|your?)\s+(?:to\s+)?(\d+)', 'humor'),
+            # Honesty patterns
             (r'set\s+honesty\s+(?:to\s+)?(\d+)', 'honesty'),
             (r'honesty\s+(?:to\s+)?(\d+)', 'honesty'),
+            (r'(\d+)\s*(?:percent|%)?\s+honesty', 'honesty'),
+            # Discretion patterns
             (r'set\s+discretion\s+(?:to\s+)?(\d+)', 'discretion'),
             (r'discretion\s+(?:to\s+)?(\d+)', 'discretion'),
-            (r'(\d+)\s*(?:percent|%)?\s+humor', 'humor'),
-            (r'(\d+)\s*(?:percent|%)?\s+honesty', 'honesty'),
         ]
         
         for pattern, setting in patterns:
@@ -463,6 +485,7 @@ class VoiceEngine:
         - Emoji and special symbols
         - Multiple punctuation
         - Stage directions in asterisks (*adjusting settings*)
+        - Name prefixes like "TARS:" that LLMs sometimes add
         
         Args:
             text: Raw text from LLM
@@ -470,6 +493,12 @@ class VoiceEngine:
         Returns:
             Cleaned text suitable for speech synthesis
         """
+        # Remove "TARS:" or "[TARS]" prefixes that LLMs sometimes add
+        # Matches: "TARS:", "TARS: ", "[TARS]", "[In a robotic voice] TARS:", etc.
+        text = re.sub(r'^\s*\[?(?:In\s+a\s+\w+\s+voice\]?\s*)?\[?TARS\]?:\s*"?', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'^"', '', text)  # Remove leading quote if present after prefix removal
+        text = re.sub(r'"$', '', text)  # Remove trailing quote too
+        
         # First: Handle markdown bold/strong BEFORE anything else
         # **bold** → bold (must come before single asterisk handling)
         text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)
@@ -670,17 +699,21 @@ class VoiceEngine:
             audio = audio / max_val * 0.9
         
         # Apply fade in/out to prevent pops at start/end
-        fade_samples = int(rate * 0.01)  # 10ms fade
+        fade_samples = int(rate * 0.02)  # 20ms fade (longer for cleaner end)
         if len(audio) > fade_samples * 2:
             # Fade in
             fade_in = np.linspace(0, 1, fade_samples)
             audio[:fade_samples] *= fade_in
-            # Fade out
+            # Fade out (longer to eliminate static)
             fade_out = np.linspace(1, 0, fade_samples)
             audio[-fade_samples:] *= fade_out
         
+        # Add silence padding at end to prevent buffer static
+        silence_pad = np.zeros(int(rate * 0.05), dtype=np.float32)  # 50ms silence
+        audio = np.concatenate([audio, silence_pad])
+        
         # Use larger blocksize for smoother playback (prevents buffer underruns)
-        sd.play(audio, rate, blocksize=2048)
+        sd.play(audio, rate, blocksize=4096)  # Even larger buffer
         sd.wait()
     
     def process_voice_input(self, duration: int = 5) -> dict:
