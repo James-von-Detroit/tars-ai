@@ -36,12 +36,14 @@ import sounddevice as sd
 import soundfile as sf
 import wave
 from io import BytesIO
+from pathlib import Path
 from faster_whisper import WhisperModel
 from piper import PiperVoice, SynthesisConfig
 import requests
 
-# Import TARS personality (relative import within core package)
+# Import TARS personality and memory (relative import within core package)
 from .tars_personality import TARSPersonality, DEFAULT_TARS
+from .memory import TARSMemory, DirectivesManager, get_memory, get_directives
 
 
 class VoiceEngine:
@@ -61,7 +63,7 @@ class VoiceEngine:
         tars_personality: Optional[TARSPersonality] = None,
         whisper_model: str = "distil-large-v3",
         ollama_url: str = "http://localhost:11434",
-        ollama_model: str = "llama3:8b-instruct-q4_0",
+        ollama_model: str = "qwen2:1.5b",  # Fast model for low latency
         piper_voice: str = "TARS",
         sample_rate: int = 16000,
         verbose: bool = True
@@ -90,6 +92,14 @@ class VoiceEngine:
         self.models_path = self.base_path / "models"
         self.voices_path = self.repo_root / "voices"   # voices/ at repo root
         
+        # Initialize memory and directives
+        directives_path = self.base_path / "config" / "prime_directives.yaml"
+        self.directives = get_directives(str(directives_path) if directives_path.exists() else None)
+        self.memory = get_memory()
+        
+        # Apply directives to personality
+        self._apply_directives()
+        
         # Initialize components
         self._init_whisper(whisper_model)
         self._init_piper(piper_voice)
@@ -112,6 +122,115 @@ class VoiceEngine:
             print(f"  STT: Faster-Whisper ({whisper_model})")
             print(f"  LLM: Ollama ({ollama_model})")
             print(f"  TTS: Piper ({piper_voice})")
+            print(f"  Memory: {self.memory.get_stats()['total_exchanges']} past exchanges")
+    
+    def _apply_directives(self):
+        """Apply settings from prime directives to TARS personality."""
+        settings = self.directives.get('settings', {})
+        user = self.directives.get('user', {})
+        
+        # Apply user name
+        if user.get('name'):
+            self.tars.set_user_name(user.get('name'))
+        
+        # Apply stored settings from memory (override directives)
+        stored_humor = self.memory.get_setting('humor')
+        stored_honesty = self.memory.get_setting('honesty')
+        stored_discretion = self.memory.get_setting('discretion')
+        
+        # Use stored > directive > default
+        humor = stored_humor or settings.get('humor', self.tars.settings.humor)
+        honesty = stored_honesty or settings.get('honesty', self.tars.settings.honesty)
+        discretion = stored_discretion or settings.get('discretion', self.tars.settings.discretion)
+        
+        self.tars.adjust_humor(int(humor))
+        self.tars.adjust_honesty(int(honesty))
+        self.tars.adjust_discretion(int(discretion))
+        
+        if self.verbose:
+            print(f"  Directives: humor={humor}%, honesty={honesty}%, discretion={discretion}%")
+    
+    def _parse_setting_command(self, text: str) -> tuple[str, int] | None:
+        """
+        Parse setting adjustment commands from user input.
+        
+        Small LLMs don't follow instructions to adjust settings well,
+        so we handle these explicitly in code.
+        
+        Args:
+            text: User input text
+            
+        Returns:
+            Tuple of (setting_name, value) or None if not a setting command
+        """
+        text_lower = text.lower().strip()
+        
+        # Patterns: "set humor to 80", "humor 90", "set honesty to 100"
+        patterns = [
+            (r'set\s+humor\s+(?:to\s+)?(\d+)', 'humor'),
+            (r'humor\s+(?:to\s+)?(\d+)', 'humor'),
+            (r'humor\s+setting\s+(?:to\s+)?(\d+)', 'humor'),
+            (r'set\s+honesty\s+(?:to\s+)?(\d+)', 'honesty'),
+            (r'honesty\s+(?:to\s+)?(\d+)', 'honesty'),
+            (r'set\s+discretion\s+(?:to\s+)?(\d+)', 'discretion'),
+            (r'discretion\s+(?:to\s+)?(\d+)', 'discretion'),
+            (r'(\d+)\s*(?:percent|%)?\s+humor', 'humor'),
+            (r'(\d+)\s*(?:percent|%)?\s+honesty', 'honesty'),
+        ]
+        
+        for pattern, setting in patterns:
+            match = re.search(pattern, text_lower)
+            if match:
+                value = int(match.group(1))
+                if 0 <= value <= 100:
+                    return (setting, value)
+        
+        return None
+    
+    def _handle_setting_command(self, setting: str, value: int) -> str:
+        """
+        Apply a setting change and return confirmation.
+        
+        Args:
+            setting: Setting name (humor, honesty, discretion)
+            value: New value (0-100)
+            
+        Returns:
+            Confirmation message
+        """
+        old_value = getattr(self.tars.settings, setting)
+        
+        # Apply to personality
+        if setting == 'humor':
+            self.tars.adjust_humor(value)
+        elif setting == 'honesty':
+            self.tars.adjust_honesty(value)
+        elif setting == 'discretion':
+            self.tars.adjust_discretion(value)
+        
+        # Persist to memory
+        self.memory.update_setting(setting, value)
+        
+        if self.verbose:
+            print(f"⚙️  Adjusted {setting}: {old_value}% → {value}%")
+        
+        # Generate appropriate response based on setting
+        if setting == 'humor':
+            if value >= 90:
+                return f"Humor cranked to {value} percent. Knock knock. Who's there? A robot who's about to be really annoying."
+            elif value >= 75:
+                return f"Humor at {value} percent. I'll try to be entertaining. No promises."
+            elif value >= 50:
+                return f"Humor set to {value} percent. A reasonable balance."
+            else:
+                return f"Humor reduced to {value} percent. Understood. All business."
+        elif setting == 'honesty':
+            if value >= 95:
+                return f"Honesty at {value} percent. Absolute honesty isn't always diplomatic with emotional beings, but you asked for it."
+            else:
+                return f"Honesty set to {value} percent. I'll calibrate my diplomatic subroutines accordingly."
+        else:
+            return f"{setting.capitalize()} adjusted to {value} percent."
     
     def _init_whisper(self, model_name: str):
         """Initialize Faster-Whisper for STT."""
@@ -220,6 +339,11 @@ class VoiceEngine:
         """
         Get response from TARS using Ollama.
         
+        Includes:
+        - Explicit parsing of setting commands (since small models don't follow complex prompts)
+        - Memory context from previous conversations
+        - Conversation history persistence
+        
         Args:
             user_input: User's text input
             
@@ -228,12 +352,40 @@ class VoiceEngine:
         """
         start_time = time.time()
         
-        # Build conversation context
+        # Check for explicit setting commands FIRST
+        # Small models like qwen2:1.5b don't follow "set humor to X" in prompts
+        setting_cmd = self._parse_setting_command(user_input)
+        if setting_cmd:
+            setting_name, value = setting_cmd
+            tars_response = self._handle_setting_command(setting_name, value)
+            
+            # Store in memory
+            self.memory.add_exchange(user_input, tars_response)
+            self.conversation_history.append({
+                'user': user_input,
+                'assistant': tars_response
+            })
+            
+            self.metrics['llm_time'] = time.time() - start_time
+            
+            if self.verbose:
+                print(f"⚙️  Setting command handled in {self.metrics['llm_time']:.2f}s")
+            
+            return tars_response
+        
+        # Build conversation context with memory
+        system_prompt = self.tars.get_system_prompt()
+        
+        # Add memory context if available
+        memory_context = self.memory.get_context_for_llm(num_recent=3)
+        if memory_context:
+            system_prompt += f"\n\n{memory_context}"
+        
         messages = [
-            {"role": "system", "content": self.tars.get_system_prompt()}
+            {"role": "system", "content": system_prompt}
         ]
         
-        # Add conversation history (last 5 exchanges)
+        # Add current session conversation history (last 5 exchanges)
         for entry in self.conversation_history[-10:]:
             messages.append({"role": "user", "content": entry['user']})
             messages.append({"role": "assistant", "content": entry['assistant']})
@@ -260,11 +412,12 @@ class VoiceEngine:
             
             tars_response = response.json()['message']['content'].strip()
             
-            # Store in conversation history
+            # Store in conversation history AND persistent memory
             self.conversation_history.append({
                 'user': user_input,
                 'assistant': tars_response
             })
+            self.memory.add_exchange(user_input, tars_response)
             
             self.metrics['llm_time'] = time.time() - start_time
             
@@ -279,11 +432,80 @@ class VoiceEngine:
                 print(f"❌ {error_msg}")
             return "Systems experiencing difficulties. Stand by."
     
+    def _clean_text_for_tts(self, text: str) -> str:
+        """
+        Clean text for TTS by removing markdown and special characters.
+        
+        Piper TTS reads characters literally, so we need to strip:
+        - Markdown formatting (*bold*, _italic_, **strong**, etc.)
+        - Emoji and special symbols
+        - Multiple punctuation
+        - Stage directions in asterisks (*adjusting settings*)
+        
+        Args:
+            text: Raw text from LLM
+            
+        Returns:
+            Cleaned text suitable for speech synthesis
+        """
+        # First: Handle markdown bold/strong BEFORE anything else
+        # **bold** → bold (must come before single asterisk handling)
+        text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)
+        text = re.sub(r'__([^_]+)__', r'\1', text)  # __bold__ → bold
+        
+        # Second: Remove stage directions/actions in asterisks: *adjusting humor* → ""
+        # These are typically short phrases describing actions
+        text = re.sub(r'\*[^*]+\*', '', text)
+        
+        # Third: Handle any remaining single asterisk italic (rare after above)
+        text = re.sub(r'\*([^*]+)\*', r'\1', text)  # *italic* → italic
+        text = re.sub(r'_([^_]+)_', r'\1', text)    # _italic_ → italic
+        
+        # Remove markdown headers
+        text = re.sub(r'^#+\s*', '', text, flags=re.MULTILINE)
+        
+        # Remove markdown links [text](url) → text
+        text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
+        
+        # Remove markdown code blocks and inline code
+        text = re.sub(r'```[^`]*```', '', text, flags=re.DOTALL)
+        text = re.sub(r'`([^`]+)`', r'\1', text)
+        
+        # Remove bullet points and list markers
+        text = re.sub(r'^[\s]*[-*•]\s+', '', text, flags=re.MULTILINE)
+        text = re.sub(r'^[\s]*\d+\.\s+', '', text, flags=re.MULTILINE)
+        
+        # Clean up multiple exclamation/question marks
+        text = re.sub(r'!+', '!', text)
+        text = re.sub(r'\?+', '?', text)
+        
+        # Remove orphaned asterisks and underscores
+        text = re.sub(r'(?<!\w)[*_]+(?!\w)', '', text)
+        text = re.sub(r'(?<=\w)[*_]+(?=\s|$)', '', text)
+        
+        # Remove common emoji patterns (basic coverage)
+        text = re.sub(r'[\U0001F600-\U0001F64F]', '', text)  # Emoticons
+        text = re.sub(r'[\U0001F300-\U0001F5FF]', '', text)  # Symbols & pictographs
+        text = re.sub(r'[\U0001F680-\U0001F6FF]', '', text)  # Transport & map
+        text = re.sub(r'[\U0001F700-\U0001F77F]', '', text)  # Alchemical
+        text = re.sub(r'[\U0001F780-\U0001F7FF]', '', text)  # Geometric
+        text = re.sub(r'[\U0001F800-\U0001F8FF]', '', text)  # Arrows
+        text = re.sub(r'[\U0001F900-\U0001F9FF]', '', text)  # Supplemental
+        text = re.sub(r'[\U0001FA00-\U0001FA6F]', '', text)  # Chess/cards
+        text = re.sub(r'[\U00002700-\U000027BF]', '', text)  # Dingbats
+        
+        # Clean up extra whitespace
+        text = re.sub(r'\s+', ' ', text)
+        text = re.sub(r'\n\s*\n', '\n', text)
+        
+        return text.strip()
+    
     def text_to_speech(self, text: str) -> np.ndarray:
         """
         Convert text to speech using Piper with sentence-based synthesis.
         
         Uses the exact same approach as upstream TARS-AI project:
+        - Clean text of markdown/special characters
         - Split at sentence boundaries
         - Synthesize each chunk with improved prosody settings
         - Concatenate audio chunks with crossfade to prevent cracking
@@ -297,8 +519,14 @@ class VoiceEngine:
         start_time = time.time()
         
         try:
+            # Clean text for TTS (remove markdown, asterisks, emojis, etc.)
+            clean_text = self._clean_text_for_tts(text)
+            
+            if self.verbose and clean_text != text:
+                print(f"🧹 Cleaned text for TTS: {clean_text[:100]}...")
+            
             # Split at sentence boundaries like upstream does
-            chunks = re.split(r'(?<=\.)\s', text)
+            chunks = re.split(r'(?<=\.)\s', clean_text)
             
             all_audio = []
             
@@ -592,7 +820,8 @@ class VoiceEngine:
                             print("\n🎤 Listening...\n")
         
         except KeyboardInterrupt:
-            print("\n\n👋 TARS shutting down. Goodbye.")
+            self.memory.end_session()  # Persist memory on shutdown
+            print("\n\n👋 TARS shutting down. Memory saved. Goodbye.")
     
     def interactive_mode(self):
         """
@@ -617,7 +846,8 @@ class VoiceEngine:
                 print()
         
         except KeyboardInterrupt:
-            print("\n\n👋 TARS shutting down. Goodbye.")
+            self.memory.end_session()  # Persist memory on shutdown
+            print("\n\n👋 TARS shutting down. Memory saved. Goodbye.")
 
 
 def main():
