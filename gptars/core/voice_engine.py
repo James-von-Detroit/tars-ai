@@ -69,9 +69,9 @@ class VoiceEngine:
     def __init__(
         self,
         tars_personality: Optional[TARSPersonality] = None,
-        whisper_model: str = "base.en",  # Fast model for low latency
+        whisper_model: str = "small.en",  # Best balance for ARM Mac CPU
         ollama_url: str = "http://localhost:11434",
-        ollama_model: str = "qwen2:1.5b",  # Fast model for low latency
+        ollama_model: str = "llama3.2:3b",  # Best balance of speed + TARS personality
         piper_voice: str = "TARS",
         sample_rate: int = 16000,
         verbose: bool = True
@@ -114,6 +114,8 @@ class VoiceEngine:
         
         # State
         self.listening = False
+        self.is_speaking = False  # Track if TARS is currently speaking
+        self.interrupt_requested = False  # Flag to interrupt playback
         self.audio_queue = queue.Queue()
         self.conversation_history = []
         
@@ -196,6 +198,8 @@ class VoiceEngine:
             # Humor patterns (including misheard variants)
             # "you set your humor up to 100", "set humor to 80", "set your humor up to 100"
             (rf'(?:you\s+)?set\s+(?:your\s+)?{humor_words}\s+{to_pattern}(\d+)', 'humor'),
+            # "set the humor 100" - no "to" needed
+            (rf'(?:you\s+)?set\s+(?:the\s+|your\s+)?{humor_words}\s+(\d+)', 'humor'),
             (rf'{humor_words}\s+{to_pattern}(\d+)', 'humor'),
             (rf'{humor_words}\s+setting\s+{to_pattern}(\d+)', 'humor'),
             (rf'change\s+(?:your\s+)?{humor_words}\s+{to_pattern}(\d+)', 'humor'),
@@ -679,13 +683,15 @@ class VoiceEngine:
         
         return result
     
-    def play_audio(self, audio: np.ndarray, sample_rate: int = None):
+    def play_audio(self, audio: np.ndarray, sample_rate: int = None, interruptible: bool = False):
         """
-        Play audio through speakers with proper buffering to prevent cracking.
+        Play audio through speakers.
         
         Args:
             audio: Audio data to play
             sample_rate: Sample rate (defaults to TTS native rate)
+            interruptible: If True, monitor for speech to interrupt playback
+                          (disabled by default - needs echo cancellation to work properly)
         """
         if len(audio) == 0:
             return
@@ -717,9 +723,70 @@ class VoiceEngine:
         silence_pad = np.zeros(int(rate * 0.05), dtype=np.float32)  # 50ms silence
         audio = np.concatenate([audio, silence_pad])
         
-        # Use larger blocksize for smoother playback (prevents buffer underruns)
-        sd.play(audio, rate, blocksize=4096)  # Even larger buffer
+        self.is_speaking = True
+        self.interrupt_requested = False
+        
+        # Simple blocking play (interrupt disabled - mic picks up speaker output)
+        sd.play(audio, rate, blocksize=4096)
         sd.wait()
+        
+        self.is_speaking = False
+    
+    def _play_with_interrupt(self, audio: np.ndarray, rate: int):
+        """
+        Play audio while monitoring for voice interrupts.
+        
+        Uses chunked playback to allow checking for interrupts.
+        """
+        # Calculate chunk size (100ms chunks for responsive interrupts)
+        chunk_duration = 0.1  # seconds
+        chunk_samples = int(rate * chunk_duration)
+        
+        # Energy threshold for interrupt detection (lower = more sensitive)
+        interrupt_threshold = 0.02
+        
+        # Start non-blocking playback
+        sd.play(audio, rate, blocksize=4096)
+        
+        # Monitor for interrupts during playback
+        total_samples = len(audio)
+        played_samples = 0
+        
+        try:
+            while sd.get_stream().active and not self.interrupt_requested:
+                # Check if user is speaking (interrupt)
+                try:
+                    # Quick mic check (non-blocking, very short sample)
+                    mic_sample = sd.rec(
+                        int(self.sample_rate * 0.05),  # 50ms sample
+                        samplerate=self.sample_rate,
+                        channels=1,
+                        dtype='float32',
+                        blocking=True
+                    )
+                    
+                    # Calculate energy
+                    energy = np.sqrt(np.mean(mic_sample ** 2))
+                    
+                    if energy > interrupt_threshold:
+                        if self.verbose:
+                            print("\n🛑 Interrupt detected! Stopping playback...")
+                        sd.stop()
+                        self.interrupt_requested = True
+                        return
+                        
+                except Exception:
+                    pass  # Ignore mic errors during playback
+                
+                time.sleep(0.05)  # Check every 50ms
+                
+        except Exception as e:
+            if self.verbose:
+                print(f"⚠️  Playback error: {e}")
+        
+        # Wait for playback to complete if not interrupted
+        if not self.interrupt_requested:
+            sd.wait()
     
     def process_voice_input(self, duration: int = 5) -> dict:
         """
@@ -864,6 +931,17 @@ class VoiceEngine:
                     user_text = self.speech_to_text(audio)
                     
                     if user_text:
+                        # Check for exit commands
+                        exit_words = ['goodbye', 'bye', 'exit', 'quit', 'stop listening', 'end conversation']
+                        if any(word in user_text.lower() for word in exit_words):
+                            # Say goodbye first
+                            goodbye_text = "Roger that, Cooper. Shutting down. Until next time."
+                            goodbye_audio = self.text_to_speech(goodbye_text)
+                            self.play_audio(goodbye_audio)
+                            self.memory.end_session()
+                            print("\n\n👋 TARS shutting down. Memory saved. Goodbye.")
+                            return  # Exit the loop
+                        
                         # Get TARS response
                         tars_text = self.get_tars_response(user_text)
                         

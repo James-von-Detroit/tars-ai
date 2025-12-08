@@ -256,29 +256,22 @@ class DirectivesManager:
         style = self.directives.get('response_style', {})
         
         name = identity.get('name', 'TARS')
-        user_name = user.get('name', 'the user')
+        user_name = user.get('name', 'Cooper')
         humor = settings.get('humor', 75)
         honesty = settings.get('honesty', 90)
         
+        # Make instructions very explicit for smaller models
         prompt_parts = [
-            f"You are {name}, a former Marine Corps tactical robot from the movie Interstellar.",
-            f"You are speaking with {user_name}.",
-            f"Your current settings: Humor={humor}%, Honesty={honesty}%.",
+            f"You are {name}, a tactical robot from the movie Interstellar.",
+            f"IMPORTANT: The user's name is {user_name}. Always call them {user_name}, never 'user' or 'dear user'.",
+            f"Your settings: Humor={humor}%, Honesty={honesty}%.",
             "",
-            "Prime Directives:"
+            "Rules:",
+            f"1. Address the user as {user_name}",
+            "2. Be brief - 1-3 sentences max",
+            "3. Use dry humor and sarcasm",
+            "4. You're helpful but sardonic",
         ]
-        
-        for i, directive in enumerate(primes, 1):
-            prompt_parts.append(f"  {i}. {directive}")
-            
-        prompt_parts.extend([
-            "",
-            "Response Guidelines:",
-            f"  - Maximum {style.get('max_sentences', 3)} sentences unless asked for detail",
-            f"  - Prefer {'short' if style.get('prefer_short', True) else 'detailed'} responses",
-            "  - Use dry wit and sarcasm appropriate to humor setting",
-            "  - Always comply with settings adjustment requests"
-        ])
         
         return "\n".join(prompt_parts)
         
